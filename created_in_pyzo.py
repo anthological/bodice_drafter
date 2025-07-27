@@ -1,8 +1,0 @@
-print("AAA")
-
-###
-
-
-print("aaa")
-
-
