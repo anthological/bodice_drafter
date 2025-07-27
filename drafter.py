@@ -2,13 +2,17 @@ from cmu_graphics import *
 #from cmu_cpcs_utils import Tree
 #import csv
 
-### UNRUNNABLE
+
 def onAppStart(app):
     app.scene = "welcome"
     app.width = 800
     app.height = 400
     app.highlightedLeft = False
     app.highlightedRight = False
+    app.highlightedBack = False
+    app.highlightedContinue = False
+###
+###                  welcome
 
 
 def redrawAll(app):
@@ -25,6 +29,9 @@ def redrawAll(app):
         else:
             border1Color = background
         border1Width = 2
+        '''
+        NOTE: adjust rectangle width to always be wider than the text
+        '''
         drawRect(app.width//4, app.height//2, app.width//6, app.height//10,
                     fill = "white", border = border1Color,
                     borderWidth = border1Width, align = "center")
@@ -41,21 +48,79 @@ def redrawAll(app):
                     borderWidth = border2Width, align = "center")
         drawLabel("Clothing Size", app.width//4*3, app.height//2, size = 16,
                     align = "center")
-
+# measurements
     if app.scene == "measurements":
-        blockOfText = "laskjf slkdf sklj \n lskdjf lksdj f"
+        #draw background
         background = "mistyRose"
         drawRect(0,0,app.width, app.height, fill = background)
-        drawLabel(blockOfText, 200,200)
+        #draw instructions
+        TextLine1 = '..asdfjhaskjdfh'
+        TextLine2 = 'asdsfj'
+        TextLine3 = 'asfasd'
+        TextLine4 = 'asd'
+        TextLine5 = 'asdfasdf'
+        drawLabel(TextLine1, app.width//6, app.height//4 + 00, align = "left-top")
+        drawLabel(TextLine2, app.width//6, app.height//4 + 12, align = "left-top")
+        drawLabel(TextLine3, app.width//6, app.height//4 + 24, align = "left-top")
+        drawLabel(TextLine4, app.width//6, app.height//4 + 36, align = "left-top")
+        drawLabel(TextLine5, app.width//6, app.height//4 + 48, align = "left-top")
+        #draw back button
+        if app.highlightedBack:
+            border1Color = "black"
+        else:
+            border1Color = background
+        border1Width = 2
+        drawRect(app.width//6, app.height//7*6, app.width//8, app.height//12,
+                    fill = "white", border = border1Color,
+                    borderWidth = border1Width, align = "center")
+        drawLabel("Go Back", app.width//6, app.height//7*6, align = "center")
+        #draw continue button
+        if app.highlightedContinue:
+            border2Color = "black"
+        else:
+            border2Color = background
+        border2Width = 2
+        drawRect(app.width//6*5, app.height//7*6, app.width//8, app.height//12,
+                    fill = "white", border = border2Color,
+                    borderWidth = border2Width, align = "center")
+        drawLabel("Continue", app.width//6*5, app.height//7*6, align = "center")
+#sizes
     if app.scene == "sizes":
+        #draw background
         background = "mistyRose"
         drawRect(0,0,app.width, app.height, fill = background)
+#draw back button
+        if app.highlightedBack:
+            border1Color = "black"
+        else:
+            border1Color = background
+        border1Width = 2
+        drawRect(app.width//6, app.height//7*6, app.width//8, app.height//12,
+                    fill = "white", border = border1Color,
+                    borderWidth = border1Width, align = "center")
+        drawLabel("Go Back", app.width//6, app.height//7*6, align = "center")
+        #draw continue button
+        if app.highlightedContinue:
+            border2Color = "black"
+        else:
+            border2Color = background
+        border2Width = 2
+        drawRect(app.width//6*5, app.height//7*6, app.width//8, app.height//12,
+                    fill = "white", border = border2Color,
+                    borderWidth = border2Width, align = "center")
+        drawLabel("Continue", app.width//6*5, app.height//7*6, align = "center")
+#drafter
     if app.scene == "drafter":
+        #draw background
         background = "mistyRose"
         drawRect(0,0,app.width, app.height, fill = background)
+
+#output
     if app.scene == "output":
+        #draw background
         background = "maroon"
         drawRect(0,0,app.width, app.height, fill = background)
+
 
 
 
@@ -74,6 +139,24 @@ def onMouseMove(app, mouseX, mouseY):
                app.highlightedRight = True
         else:
             app.highlightedRight = False
+    if app.scene == "measurements" or app.scene == "sizes":
+        app.highlightedLeft = False
+        app.highlightedRight = False
+        app.highlightedBack = False
+        app.highlightedContinue = False
+        #highlight back button
+        if ((app.width//6-app.width/16) < mouseX < (app.width//6+app.width/16) and
+           (app.height//7*6-app.width//24) < mouseY < (app.height//7*6+app.height//24)):
+               app.highlightedBack = True
+        else:
+            app.highlightedBack = False
+        #highlight continue button
+        if ((app.width//6*5-app.width/16) < mouseX < (app.width//6*5+app.width/16) and
+           (app.height//7*6-app.width//24) < mouseY < (app.height//7*6+app.height//24)):
+               app.highlightedContinue = True
+        else:
+            app.highlightedContinue = False
+
 
 
 def onMousePress(app, mouseX, mouseY):
@@ -86,6 +169,17 @@ def onMousePress(app, mouseX, mouseY):
         if ((app.width//4*3-app.width/12) < mouseX < (app.width//4*3+app.width/12) and
            (app.height//2-app.width//20) < mouseY < (app.height//2+app.height//20)):
                app.scene = "sizes"
+    if app.scene == "measurements" or app.scene == "sizes":
+        #go back to welcome
+        if ((app.width//6-app.width/16) < mouseX < (app.width//6+app.width/16) and
+           (app.height//7*6-app.width//24) < mouseY < (app.height//7*6+app.height//24)):
+               app.scene = "welcome"
+        #go to drafter
+        if ((app.width//6*5-app.width/16) < mouseX < (app.width//6*5+app.width/16) and
+           (app.height//7*6-app.width//24) < mouseY < (app.height//7*6+app.height//24)):
+               app.scene = "drafter"
+
+
 
 
 runApp(app)
