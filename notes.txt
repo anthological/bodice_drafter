@@ -1,0 +1,93 @@
+###
+### ============== DRAFT SLOPER =============================
+### load size measurements
+
+
+### store user measurements
+
+
+### calculate measurements
+
+
+### draw guidelines
+
+
+### draw points
+
+
+### draw straight lines
+
+
+### calculate curves
+
+
+### draw curves
+
+
+### prepare for output
+
+
+### ============== USER INTERFACE ==========================
+### select start type
+# welcome
+# select units and paper size (convert)
+#height, bust, waist, hip
+
+### how to measure
+#PEOPLE DO NOT READ
+
+### size selector
+# 3XS to 8XL
+# slider starting at Medium
+
+### receive user input
+#text boxes
+#on click: type in data
+#hit enter to submit
+ #you could have a highlight on what text box you're typing in
+
+### draw mannequin
+#show the measurement you're currently clicked on
+#if it's on the back, show the back of the body
+#it would be really nice if you could click and drag to rotate the model
+#but maybe we'll just have two images
+#or maybe it would rotate on mouseover
+#me when t-posing
+#me when no arms
+#me when at rest
+
+### some pretty processing screen
+#optional
+#draft each line progressively, slowly?
+#draw each line and label it, then draw next line after a pause
+
+### save, download
+#library of users/slopers
+#create class user??
+
+
+### ================= mannequin ========================
+### get a basic 3D model
+# theft
+
+### put all of the measurements on it
+# draw on it?
+
+### mouse-over or click on input box to display
+#onClick(mouseX, mouseY)
+#onMouseOver(mouseX, mouseY)
+
+### ================= pdf stuff ========================
+# figure out how to export to pdf
+
+
+
+### ============= design elements ==================
+# options:
+#sleeve things
+#neckline things
+#fittedness things
+#closure things
+#seamline things
+
+
