@@ -31,14 +31,20 @@ to output:
 ### import libraries
 #from cmu_graphics import *
 from datetime import date
+import csv
 
-### read in dressform measurements from csv
 
-allSizes = dressform_measurements.csv
-
-### oh no it's globals
+### load in constants
 allMeasurements = ['neck', 'shoulder', 'front length', 'cross front','figure length','figure breadth', 'back length', 'cross back', 'bust', 'underbust', 'waist', 'high hip', 'low hip', 'side', 'armhole','front neck', 'back neck', 'half figure breadth', 'half cross front','half cross back', 'front bust', 'back bust', 'cup size','front waist', 'back waist', 'front armhole', 'back armhole']
 requiredMeasurements = allMeasurements[:15]
+allForms = ['00']
+for s in range(0, 24, 2): #womens forms
+    allForms.append(str(s))
+for s in range(36, 52, 2): #mens forms
+    allForms.append(str(s))
+
+
+### hardcoded example
 
 example_measurements = dict()
 for measurement in allMeasurements:
@@ -58,6 +64,27 @@ example_measurements['high hip']       = 44.5
 example_measurements['low hip']        = 44.5
 example_measurements['side']           = 10.5
 example_measurements['armhole']        = 16.25
+
+
+### filling in default sizes
+
+with open('C:/Users/Janet/Documents/GitHub/bodice_drafter/dressform_measurements.csv', newline='') as wrapper:
+    reader = csv.reader(wrapper)
+    df = []
+    for row in reader:
+        df.append(row)
+
+beneviento = dict() #hehe
+for col in range(1, len(df[0])):
+    beneviento[df[0][col]] = dict()
+    for rowName in allMeasurements:
+        beneviento[df[0][col]][rowName] = None
+
+for form in beneviento:
+    formIndex = allForms.index(form)
+    print(formIndex, form, df[0][formIndex+1])
+    for measurement in form:
+        beneviento[form][measurement] = None
 
 ### user stuff
 
@@ -114,6 +141,6 @@ def interpolateMeasurements(measures, knownSize = None):
 
 calculateMeasurements(example_measurements)
 
-
+###
 
 
