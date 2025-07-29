@@ -1,33 +1,3 @@
-### notes to self
-
-'''
-okay. so we want, for the framework:
-a bunch of users.
-    within each user, we have a name, a date, US or metric, and a list of fittings.
-        list of fittings is sorted by most recent.
-            within each fitting, a date, and a dictionary of measurements.
-                some of these measurements are taken from the user,
-                some are calculated from measurements taken,
-                some are guessed from clothing size,
-                some are guessed without the clothing size.
-
-
-with a complete list of measurements, you can output a bunch of points, which can be used
-to draw lines.
-
-then we draw the straight lines
-then we draw the curves
-then we draw the labels
-
-then we display this as a preview
-
-to output:
-    if user is US user and using inches,
-        scale to 2550x3300
-    else:
-        scale to 2480x3508
-'''
-
 ### import libraries
 #from cmu_graphics import *
 from datetime import date
@@ -81,10 +51,11 @@ for col in range(1, len(df[0])):
         beneviento[df[0][col]][rowName] = None
 
 for form in beneviento:
+    print(form)
     formIndex = allForms.index(form)
-    print(formIndex, form, df[0][formIndex+1])
-    for measurement in form:
-        beneviento[form][measurement] = None
+    dfCol = [formIndex+1]
+
+
 
 ### user stuff
 
@@ -96,8 +67,9 @@ class user:
         self.fittings = self.sortFittings(self)
         self.measurements = self.fittings[0]
 
-    def sortFittings(self):
-
+    def sortFittings(self): #list of fittings
+        sortedFittings = copy.deepcopy(self.fittings)
+        #do i need to make fitting IDs?
         return sortedFittings
 
 ###
@@ -120,27 +92,114 @@ class fitting:
 ### functions to calculate measurements
 
 
-def calculateMeasurements(measures): #takes dictonry
+def calculateMeasurements(measures): #measures is a dictionary
     toCalculate = []
     for key in measures:
         if measures[key] == None:
             toCalculate.append(key)
     for key in toCalculate:
         if key in requiredMeasurements:
-            measures = interpolateMeasurements(measures)
+            measures[key] = interpolateMeasurement(measures, key) #returns None
 
 
 
-def interpolateMeasurements(measures, knownSize = None):
+def interpolateMeasurements(measures, key, knownSize = None):
     toCalculate = []
     if knownSize != None:
-        sizeMeasurements = allSizes[knownSize] #dict
+        sizeMeasurements = allSizes[knownSize]
         for size in sizeMeasurements:
             if toCalculate[size] != None:
                 pass
 
 calculateMeasurements(example_measurements)
 
+### just get on with it
+
+def calculateMeasurementsHelper(measures, height = 66)
+    #import known ones
+    neck = measures['neck']
+    shoulder = measures['shoulder']
+    front_length = measures['front length']
+    cross_front = measures['cross front']
+    figure_length = measures['figure length']
+    figure_breadth = measures['figure breadth']
+    back_length = measures['back length']
+    cross_back = measures['cross back']
+    bust = measures['bust']
+    underbust = measures['underbust']
+    waist = measures['waist']
+    high_hip = measures['high hip']
+    low_hip = measures['low hip']
+    side = measures['side']
+    measures = measures['armhole']
+    #calculate the rest
+    front_neck = neck/6 + 0.25
+    back_neck = neck/6 + 0.375
+    figure_breadth = figure_breadth/2
+    cross_front = cross_front/2
+    cross_back = cross_back/2
+    front_bust = bust/4 + 0.25
+    back_bust = bust/4 - 0.25
+    cup_size = rounded(bust - underbust - 4.5)
+    front_waist = waist/4 + 0.25
+    back_waist = waist/4 - 0.25
+    front_armhole = armhole/2 - 0.25
+    back_armhole = armhole/2 + 0.25
+    if front_length > back_length:
+        front_armhole += 0.5
+        back_armhole -= 0.5
+    if height <= 64:
+        waist_height = 8
+        HH_height = 4
+    elif height >= 70:
+        waist_height = 9
+        HH_height = 4
+    else:
+        waist_height = 8.5
+        HH_height = 4
+    if cup_size == 1:
+        shoulder_dart = 0.375
+        side_dart = 0.75
+        armhole_dart = 0.375
+        CF_dart = 0.375
+    elif cup_size == 2:
+        shoulder_dart = 0.5
+        side_dart = 1
+        armhole_dart = 0.5
+        CF_dart = 0.5
+    elif cup_size == 3:
+        shoulder_dart = 0.625
+        side_dart = 1.25
+        armhole_dart = 0.625
+        CF_dart = 0.625
+    else:
+        shoulder_dart = 0.75
+        side_dart = 1.5
+        armhole_dart = 0.75
+        CF_dart = 0.75
+    if low_hip - waist >= 14:
+        waist_dart = 1.25
+    elif low_hip - waist >= 10:
+        waist_dart = 1
+    elif low_hip - waist >= 8:
+        waist_dart = 0.75
+    elif low_hip - waist >= 2:
+        waist_dart = 0.375
+    else:
+        waist_dart = 0
+    out = dict()
+    #for measure in allMeasures:
+    #    out[measure] =
+    return out
+
+
 ###
+
+
+
+
+
+
+
 
 
