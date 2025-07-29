@@ -1,4 +1,15 @@
 
+###
+
+def onAppStart(app):
+    app.scene = "welcome"
+    app.width = 800
+    app.height = 400
+    app.highlightedLeft = False
+    app.highlightedRight = False
+    app.highlightedBack = False
+    app.highlightedContinue = False
+
 ### readrawAll
 
 def redrawAll(app):
