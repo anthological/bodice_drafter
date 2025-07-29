@@ -1,44 +1,6 @@
-### import libraries
-#from cmu_graphics import *
-from datetime import date
-
-### read in dressform measurements from csv
-
-
-
-### establish measurements
-
-all_measurements = ['sizing type','neck', 'shoulder', 'front length', 'cross front','figure length','figure breadth', 'back length', 'cross back', 'bust', 'underbust', 'waist', 'high hip', 'low hip', 'side', 'armhole','front neck', 'back neck', 'half figure breadth', 'half cross front','half cross back', 'front bust', 'back bust', 'cup size','front waist', 'back waist', 'front armhole', 'back armhole']
-
-example_user_measurements = dict()
-
-example_user_measurements['neck']           = 17.5
-example_user_measurements['shoulder']       = 4.25
-example_user_measurements['front length']   = 15.75
-example_user_measurements['cross front']    = 15.25
-example_user_measurements['figure length']  = 10.75
-example_user_measurements['figure breadth'] = 10
-example_user_measurements['back length']    = 17
-example_user_measurements['cross back']     = 16
-example_user_measurements['bust']           = 49
-example_user_measurements['underbust']      = 44.25
-example_user_measurements['waist']          = 42
-example_user_measurements['high hip']       = 51.25
-example_user_measurements['low hip']        = 50.75
-example_user_measurements['side']           = 8.5
-example_user_measurements['armhole']        = 18.5
-
-###
-
-class user:
-    def __init__(self, name, fittings = []):
-        self.name = name
-        self.initialized = date.today()
-        self.fittings = [] #more fittings will be taken later
-
+### notes to self
 
 '''
-
 okay. so we want, for the framework:
 a bunch of users.
     within each user, we have a name, a date, US or metric, and a list of fittings.
@@ -66,13 +28,92 @@ to output:
         scale to 2480x3508
 '''
 
+### import libraries
+#from cmu_graphics import *
+from datetime import date
+
+### read in dressform measurements from csv
+
+allSizes = dressform_measurements.csv
+
+### oh no it's globals
+allMeasurements = ['neck', 'shoulder', 'front length', 'cross front','figure length','figure breadth', 'back length', 'cross back', 'bust', 'underbust', 'waist', 'high hip', 'low hip', 'side', 'armhole','front neck', 'back neck', 'half figure breadth', 'half cross front','half cross back', 'front bust', 'back bust', 'cup size','front waist', 'back waist', 'front armhole', 'back armhole']
+requiredMeasurements = allMeasurements[:15]
+
+example_measurements = dict()
+for measurement in allMeasurements:
+    example_measurements[measurement]  = None
+example_measurements['neck']           = 16
+example_measurements['shoulder']       = 4.5
+example_measurements['front length']   = 17
+example_measurements['cross front']    = 14.5
+example_measurements['figure length']  = 10.25
+example_measurements['figure breadth'] = 7.75
+example_measurements['back length']    = 18
+example_measurements['cross back']     = 14.5
+example_measurements['bust']           = 41
+example_measurements['underbust']      = 33.75
+example_measurements['waist']          = 37
+example_measurements['high hip']       = 44.5
+example_measurements['low hip']        = 44.5
+example_measurements['side']           = 10.5
+example_measurements['armhole']        = 16.25
+
+### user stuff
+
+class user:
+    def __init__(self, name, fittings = []): #user, string, list of fittings
+        self.name = name
+        self.initialized = date.today()
+        self.fittings = []
+        self.fittings = self.sortFittings(self)
+        self.measurements = self.fittings[0]
+
+    def sortFittings(self):
+
+        return sortedFittings
+
 ###
 
-def onAppStart(app):
-    app.scene = "welcome"
-    app.width = 800
-    app.height = 400
-    app.highlightedLeft = False
-    app.highlightedRight = False
-    app.highlightedBack = False
-    app.highlightedContinue = False
+class fitting:
+    def __init__(self, username = None): #fitting, string, dict
+        allMeasurements = ['neck', 'shoulder', 'front length', 'cross front','figure length','figure breadth', 'back length', 'cross back', 'bust', 'underbust', 'waist', 'high hip', 'low hip', 'side', 'armhole','front neck', 'back neck', 'half figure breadth', 'half cross front','half cross back', 'front bust', 'back bust', 'cup size','front waist', 'back waist', 'front armhole', 'back armhole']
+        self.measurements = dict()
+        for m in allMeasurements:
+            self.measurements[m] = None
+        self.date = date.today()
+        if username != None:
+            user = None #look up username
+            for m in allMeasurements:
+                if user.measurements[m] != None:
+                    self.measurements[m] = user.measurements[m]
+
+
+
+### functions to calculate measurements
+
+
+def calculateMeasurements(measures): #takes dictonry
+    toCalculate = []
+    for key in measures:
+        if measures[key] == None:
+            toCalculate.append(key)
+    for key in toCalculate:
+        if key in requiredMeasurements:
+            measures = interpolateMeasurements(measures)
+
+
+
+def interpolateMeasurements(measures, knownSize = None):
+    toCalculate = []
+    if knownSize != None:
+        sizeMeasurements = allSizes[knownSize] #dict
+        for size in sizeMeasurements:
+            if toCalculate[size] != None:
+                pass
+
+calculateMeasurements(example_measurements)
+
+
+
+
