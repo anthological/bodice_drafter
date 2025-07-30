@@ -1,4 +1,8 @@
-### ON RESET
+from datetime import date
+import csv
+from cmu_graphics import *
+
+### RUN ON KERNEL RESTART
 from datetime import date
 import csv
 from cmu_graphics import *
@@ -58,7 +62,7 @@ for form in beneviento:
                 beneviento[form][row[0]] = float(row[dfCol])
 
 
-### ^^^run that on reset
+### begin actual stuff
 
 def initiateEverything():
     allMeasurements = ['neck', 'shoulder', 'front length', 'cross front',
@@ -98,7 +102,7 @@ def initiateEverything():
     example_measurements['armhole']        = 16.25
 
     #used csv library example from documentation (see readme)
-    with open('C:/Users/Janet/Documents/GitHub/bodice_drafter/dressform_measurements.csv', newline='') as wrapper:
+    with open('C:/Users/Janet/Documents/GitHub/bodice_drafter/smoother_measurements.csv', newline='') as wrapper:
         reader = csv.reader(wrapper)
         df = []
         for row in reader:
@@ -120,7 +124,7 @@ def initiateEverything():
     #each form is a dictionary of measurements
     return beneviento, allMeasurements, example_measurements
 
-###
+### user stuff
 
 class user:
     def __init__(self, name, fittings = []): #user, string, list of fittings
@@ -128,7 +132,7 @@ class user:
         self.initialized = date.today()
         self.fittings = fittings
         self.fittings = self.sortFittings(self)
-        self.measurements = self.fittings[0]
+        self.measurements = self.fittings[0] #most recent fitting
 
     def sortFittings(self): #list of fittings
         sortedFittings = copy.deepcopy(self.fittings)
@@ -148,7 +152,39 @@ class fitting:
                     self.measurements[m] = user.measurements[m]
 
 
-###
+### fill out measurements
+
+
+def guessSize(measures):
+    if (measures['bust'] == None or
+        measures['waist'] == None or
+        measures['low hip'] == None):
+            return None
+    closestSize = ''
+    closestSizeScore = 999
+    for size in beneviento:
+        if size != '':
+            bustScore = (measures['bust'] - beneviento[size]['bust'])**2 / beneviento[size]['bust']
+            waistScore = (measures['waist'] - beneviento[size]['waist'])**2 / beneviento[size]['waist']
+            hipScore = (measures['low hip'] - beneviento[size]['low hip'])**2 / beneviento[size]['low hip']
+            currScore = bustScore + 2*waistScore + hipScore
+            if currScore < closestSizeScore:
+                closestSize = size
+    return closestSize
+
+
+def interpolateMeasurements(measures, size = ''):
+    if size == '':
+        size = guessSize(measures)
+        if size == None:
+            print("please supply bust, waist, and hip")
+            return None
+    constructed = beneviento[size]
+    for m in measures:
+        if measures[m] != None:
+            constructed[m] = measures[m]
+
+
 
 def calculateMeasurements(measures, height = 66):
     #import known ones
@@ -188,7 +224,7 @@ def calculateMeasurements(measures, height = 66):
     if front_length > back_length:
         front_armhole += 0.5
         back_armhole -= 0.5
-    #hip depth
+    #height
     if height <= 64:
         LH_depth = 8
         HH_depth = 4
@@ -230,7 +266,7 @@ def calculateMeasurements(measures, height = 66):
         waist_dart = 0.375
     else:
         waist_dart = 0
-    #format
+    #formatting
     out = {
     'neck': neck,
     'shoulder': shoulder,
@@ -271,45 +307,20 @@ def calculateMeasurements(measures, height = 66):
     'centerFrontDart': CF_dart,
     'waistDart': waist_dart}
     return out
-###
 
-def interpolateMeasurements(measures, size = ''):
-    if size == '':
-        size = guessSize(measures)
-        if size == None:
-            print("please supply bust, waist, and hip to interpolate measures")
-            return measures
-    constructed = beneviento[size]
-    for m in measures:
-        if measures[m] != None:
-            constructed[m] = measures[m]
-
-
-def guessSize(measures):
-    if (measures['bust'] == None or
-        measures['waist'] == None or
-        measures['low hip'] == None):
-            return None
-    closestSize = ''
-    closestSizeScore = 999
-    for size in beneviento:
-        if size != '':
-            bustScore = (measures['bust'] - beneviento[size]['bust'])**2 / beneviento[size]['bust']
-            waistScore = (measures['waist'] - beneviento[size]['waist'])**2 / beneviento[size]['waist']
-            hipScore = (measures['low hip'] - beneviento[size]['low hip'])**2 / beneviento[size]['low hip']
-            currScore = bustScore + 2*waistScore + hipScore
-            if currScore < closestSizeScore:
-                closestSize = size
-    return closestSize
-
+exampleMeasures = calculateMeasurements(example_measurements)
 
 ### generate guides
-#i'm setting x=0 at the waist and y=0 at center front
-#with the side seam in the +x direction
-#adjusting for position on page happens later
 
+'''
+(0,0) is at the center waist for both front and back drafts
+The front side seam is in the +x direction
+The back side seam is in the -x direction
+Everything is in inches
+Input m is a full dictionary of measurements
+'''
 
-def generateFrontGuidePoints(m): #measurements dictionary
+def generateFrontGuidePoints(m): #m = measurements dictionary
     out = [(0,0),(m['frontLowHip'],0)] #waist line
     out.append([(0,-m['highHipDepth']),(m['frontLowHip'],-m['highHipDepth'])]) #high hip line
     out.append([(0,-m['lowHipDepth']),(m['frontLowHip'],-m['lowHipDepth'])]) #low hip line
@@ -318,24 +329,87 @@ def generateFrontGuidePoints(m): #measurements dictionary
     out.append([(0,m['frontLength']/2),(m['frontBust'],m['frontLength']/2)]) #bust line
     return out
 
-def generateBackGuidePoints(m):
+def generateBackGuidePoints(m): #m = measurements dictionary
     out = [(0,0),(m['backLowHip'],0)] #waist line
     out.append([(0,-m['highHipDepth']),(m['backLowHip'],-m['highHipDepth'])]) #high hip line
     out.append([(0,-m['lowHipDepth']),(m['backLowHip'],-m['lowHipDepth'])]) #low hip line
     out.append([(0,m['backLength']),(9,m['backLength'])]) #neck/shoulder line
     out.append([(0,m['backLength']/4*3),(9,m['backLength']/4*3)]) #cross-back line
     out.append([(0,m['backLength']/2),(m['backBust'],m['backLength']/2)]) #bust line
+    return out
 
+### geometry
+
+def dist(x1, y1, x2, y2):
+    return ((x2-x1)**2+(y2-y1)**2)**0.5
+
+def landOnGuideline(x1, y1, x2, y2, length):
+    pass
+
+def pointAlongDiagLine(x1, y1, length, x2 = None, y2 = None, angle = None):
+    pass
+
+def skipDart(cx, cy, x1, y1, x2, y2):
+    pass
+
+def simpleDiagGuide(x1, y1, length, direction):
+    pass
+
+def makeEllipse(x1, y1, x2, y2, x3, y3):
+    pass
+
+def getArc(ellipse, xy1, xy2, xy3):
+    pass
+
+def pointAlongEllipse(ellipse, xy, length, direction):
+    pass
 
 ### generate front moulage
 
 
-
-
-
-
-
-
+def generateFrontMoulagePoints(m):
+    out = dict()
+    #neck
+    out['A'] = (0, m['frontLength'])
+    out['B'] = (m['frontNeck'], m['frontLength'])
+    out['C'] = (m['frontNeck'], m['frontLength']+(m['frontNeck']+0.125))
+    out['D'] = (m['frontNeck'], m['frontLength']+(m['frontNeck']+0.125)/2)
+    out['E'] = (m['frontNeck']+6, m['frontLength']+(m['frontNeck']+0.125)/2)
+    #shoulder
+    out['F'] =
+    out['G'] =
+    out['H'] =
+    out['I'] =
+    out['J'] =
+    out['K'] =
+    out['L'] =
+    out['M'] =
+    out['N'] =
+    out['O'] =
+    out['P'] =
+    out['Q'] =
+    out['R'] =
+    out['S'] =
+    out['T'] =
+    out['U'] =
+    out['V'] =
+    out['W'] =
+    out['X'] =
+    out['Y'] =
+    out['Z'] =
+    out['aa']=
+    out['bb']=
+    out['cc']=
+    out['dd']=
+    out['ee']=
+    out['ff']=
+    out['gg']=
+    out['hh']=
+    out['ii']=
+    out['jj']=
+    out['kk']=
+    out['ll']=
+    out['mm']=
 
 
 ### ALL THE CMU_GRAPHICS STUFF
