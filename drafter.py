@@ -178,26 +178,30 @@ def calculateMeasurements(measures, height = 66):
     half_cross_back = cross_back/2
     front_bust = bust/4 + 0.25
     back_bust = bust/4 - 0.25
-    cup_size = rounded(bust - underbust - 4.5)
+    cup_size = (bust - underbust - 4.5)//1
     front_waist = waist/4 + 0.25
     back_waist = waist/4 - 0.25
     front_armhole = armhole/2 - 0.25
     back_armhole = armhole/2 + 0.25
-
+    front_high_hip = high_hip/4 + 0.25
+    back_high_hip = high_hip/4 - 0.25
+    front_low_hip = low_hip/4 + 0.25
+    back_low_hip = low_hip/4 - 0.25
+    #adjustments
     if front_length > back_length:
         front_armhole += 0.5
         back_armhole -= 0.5
-
+    #hip depth
     if height <= 64:
-        waist_height = 8
-        HH_height = 4
+        LH_depth = 8
+        HH_depth = 4
     elif height >= 70:
-        waist_height = 9
-        HH_height = 4
+        LH_depth = 9
+        HH_depth = 4
     else:
-        waist_height = 8.5
-        HH_height = 4
-
+        LH_depth = 8.5
+        HH_depth = 4
+    #cup darts
     if cup_size == 1:
         shoulder_dart = 0.375
         side_dart = 0.75
@@ -218,7 +222,7 @@ def calculateMeasurements(measures, height = 66):
         side_dart = 1.5
         armhole_dart = 0.75
         CF_dart = 0.75
-
+    #waist dart
     if low_hip - waist >= 14:
         waist_dart = 1.25
     elif low_hip - waist >= 10:
@@ -229,48 +233,100 @@ def calculateMeasurements(measures, height = 66):
         waist_dart = 0.375
     else:
         waist_dart = 0
-
+    #format
     out = {
     'neck': neck,
     'shoulder': shoulder,
-    'front length': front_length,
-    'cross front': cross_front,
-    'figure length': figure_length,
-    'figure breadth': figure_breadth,
-    'back length': back_length,
-    'cross back': cross_back,
+    'frontLength': front_length,
+    'crossFront': cross_front,
+    'figureLength': figure_length,
+    'figureBreadth': figure_breadth,
+    'backLength': back_length,
+    'crossBack': cross_back,
     'bust': bust,
     'underbust': underbust,
     'waist': waist,
-    'high hip': high_hip,
-    'low hip': low_hip,
+    'highHip': high_hip,
+    'lowHip': low_hip,
     'side': side,
     'armhole': armhole,
-    'front neck': front_neck,
-    'back neck': back_neck,
-    'half figure breadth': half_figure_breadth,
-    'half cross front': half_cross_front,
-    'half cross back': half_cross_back,
-    'front bust': front_bust,
-    'back bust': back_bust,
-    'cup size': cup_size,
-    'front waist': front_waist,
-    'back waist': back_waist,
-    'front armhole': front_armhole,
-    'back armhole': back_armhole,
-    'waist height': waist_height,
-    'high hip height': HH_height,
-    'shoulder dart': shoulder_dart,
-    'side dart': side_dart,
-    'armhole dart': armhole_dart,
-    'center front dart': CF_dart,
-    'waist dart': waist_dart}
+    'frontNeck': front_neck,
+    'backNeck': back_neck,
+    'halfFigureBreadth': half_figure_breadth,
+    'halfCrossFront': half_cross_front,
+    'halfCrossBack': half_cross_back,
+    'frontBust': front_bust,
+    'backBust': back_bust,
+    'cupSize': cup_size,
+    'frontWaist': front_waist,
+    'backWaist': back_waist,
+    'frontArmhole': front_armhole,
+    'backArmhole': back_armhole,
+    'frontHighHip': front_high_hip,
+    'backHighHip': back_high_hip,
+    'frontLowHip': front_low_hip,
+    'backLowHip': back_low_hip,
+    'lowHipDepth': LH_depth,
+    'highHipDepth': HH_depth,
+    'shoulderDart': shoulder_dart,
+    'sideDart': side_dart,
+    'armholeDart': armhole_dart,
+    'centerFrontDart': CF_dart,
+    'waistDart': waist_dart}
     return out
 
-def interpolateMeasurements(measures, key, knownSize = None):
-    pass
+def interpolateMeasurements(measures, knownSize = None):
+    if knownSize != None:
+        base = beneviento[knownSize]
+    else:
+        base = beneviento[16] #no data in this one
+    #as long as you have bust, waist, and hip, you're fine
+    #find the B/W/H that's got the lowest mean distance from yours
+    #that's your size
+    #if there's any measurements other than that that you have
+    #then fill in those instead
+    return base
 
-### draw things
+
+
+### draw front moulage
+#i'm setting x=0 at the waist and y=0 at center front
+#with the side seam in the +x direction
+#adjusting for position on page happens later
+
+
+def generateFrontGuidePoints(m): #measurements dictionary
+    out = [(0,0),(m['frontLowHip'],0)] #waist line
+    out.append([(0,-m['highHipDepth']),(m['frontLowHip'],-m['highHipDepth'])]) #high hip line
+    out.append([(0,-m['lowHipDepth']),(m['frontLowHip'],-m['lowHipDepth'])]) #low hip line
+    out.append([(0,m['frontLength']),(4,m['frontLength'])]) #neckline
+    out.append([(0,m['frontLength']-3),(8,m['frontLength']-3)]) #cross-front line
+    out.append([(0,m['frontLength']/2),(m['frontBust'],m['frontLength']/2)]) #bust line
+    return out
+
+def generateBackGuidePoints(m):
+    out = [(0,0),(m['backLowHip'],0)] #waist line
+    out.append([(0,-m['highHipDepth']),(m['backLowHip'],-m['highHipDepth'])]) #high hip line
+    out.append([(0,-m['lowHipDepth']),(m['backLowHip'],-m['lowHipDepth'])]) #low hip line
+    out.append([(0,m['backLength']),(9,m['backLength'])]) #neck/shoulder line
+    out.append([(0,m['backLength']/4*3),(9,m['backLength']/4*3)]) #cross-back line
+    out.append([(0,m['backLength']/2),(m['backBust'],m['backLength']/2)]) #bust line
+
+
+
+
+def drawFrontGuidelines(pointList):
+    for pair in range(len(pointList(0, len(pointList), 2))):
+        drawLine(x1, y1, x2, y2, fill='red', visible = True)
+
+
+
+
+
+
+
+
+
 
 
 
