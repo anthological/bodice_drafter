@@ -1,20 +1,17 @@
 ### import libraries
-#from cmu_graphics import *
 from datetime import date
 import csv
 
 
-### load in constants
+### globals
 allMeasurements = ['neck', 'shoulder', 'front length', 'cross front','figure length','figure breadth', 'back length', 'cross back', 'bust', 'underbust', 'waist', 'high hip', 'low hip', 'side', 'armhole','front neck', 'back neck', 'half figure breadth', 'half cross front','half cross back', 'front bust', 'back bust', 'cup size','front waist', 'back waist', 'front armhole', 'back armhole']
 requiredMeasurements = allMeasurements[:15]
+
 allForms = ['00']
-for s in range(0, 24, 2): #womens forms
+for s in range(0, 24, 2): #womens sizes
     allForms.append(str(s))
-for s in range(36, 52, 2): #mens forms
+for s in range(36, 52, 2): #mens sizes
     allForms.append(str(s))
-
-
-### hardcoded example
 
 example_measurements = dict()
 for measurement in allMeasurements:
@@ -36,8 +33,6 @@ example_measurements['side']           = 10.5
 example_measurements['armhole']        = 16.25
 
 
-### filling in default sizes
-
 with open('C:/Users/Janet/Documents/GitHub/bodice_drafter/dressform_measurements.csv', newline='') as wrapper:
     reader = csv.reader(wrapper)
     df = []
@@ -50,6 +45,7 @@ for col in range(1, len(df[0])):
     for rowName in allMeasurements:
         beneviento[df[0][col]][rowName] = None
 
+
 for form in beneviento:
     print(form)
     formIndex = allForms.index(form)
@@ -57,39 +53,33 @@ for form in beneviento:
 
 
 
-### user stuff
+###
 
 class user:
     def __init__(self, name, fittings = []): #user, string, list of fittings
         self.name = name
         self.initialized = date.today()
-        self.fittings = []
+        self.fittings = fittings
         self.fittings = self.sortFittings(self)
         self.measurements = self.fittings[0]
 
     def sortFittings(self): #list of fittings
         sortedFittings = copy.deepcopy(self.fittings)
-        #do i need to make fitting IDs?
+        #do i need to make fitting IDs
+        #gotta figure out how to sort datetimes.date
         return sortedFittings
-
-###
 
 class fitting:
     def __init__(self, username = None): #fitting, string, dict
-        allMeasurements = ['neck', 'shoulder', 'front length', 'cross front','figure length','figure breadth', 'back length', 'cross back', 'bust', 'underbust', 'waist', 'high hip', 'low hip', 'side', 'armhole','front neck', 'back neck', 'half figure breadth', 'half cross front','half cross back', 'front bust', 'back bust', 'cup size','front waist', 'back waist', 'front armhole', 'back armhole']
         self.measurements = dict()
         for m in allMeasurements:
             self.measurements[m] = None
         self.date = date.today()
         if username != None:
-            user = None #look up username
             for m in allMeasurements:
                 if user.measurements[m] != None:
                     self.measurements[m] = user.measurements[m]
 
-
-
-### functions to calculate measurements
 
 
 def calculateMeasurements(measures): #measures is a dictionary
@@ -105,17 +95,12 @@ def calculateMeasurements(measures): #measures is a dictionary
 
 def interpolateMeasurements(measures, key, knownSize = None):
     toCalculate = []
+    knownSize = str(knownSize)
     if knownSize != None:
-        sizeMeasurements = allSizes[knownSize]
-        for size in sizeMeasurements:
-            if toCalculate[size] != None:
-                pass
+        pass
 
-calculateMeasurements(example_measurements)
 
-### just get on with it
-
-def calculateMeasurementsHelper(measures, height = 66)
+def calculateMeasurementsHelper(measures, height = 66):
     #import known ones
     neck = measures['neck']
     shoulder = measures['shoulder']
@@ -192,14 +177,11 @@ def calculateMeasurementsHelper(measures, height = 66)
     #    out[measure] =
     return out
 
+### define guideline points
 
-###
-
-
-
-
-
-
-
-
+#this is all dependent on your drafter dimensions
+#uh
+#we could start scaled-down so it fits on your screen
+#and then just scale it up for printing?
+#i don't like this
 

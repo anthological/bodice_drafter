@@ -2,7 +2,6 @@
 jlbellan 15-112 - Takes a person's measurements and drafts a bodice sloper for creating fitted garment patterns.
 
 
-## it'll be better if you download dressform_measurements.csv but you don't need it
 
 ## sources:
     https://docs.python.org/3/library/datetime.html

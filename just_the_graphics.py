@@ -1,3 +1,4 @@
+from cmu_graphics import *
 
 ###
 
@@ -177,7 +178,14 @@ def onMousePress(app, mouseX, mouseY):
            (app.height//7*6-app.width//24) < mouseY < (app.height//7*6+app.height//24)):
                app.scene = "drafter"
 
+### onMouseRelease
+
+def onMouseRelease(app, mouseX, mouseY):
+    if app.scene == "measurements" or app.scene == "sizes":
+        app.highlightedBack = False
+
 ### runApp
 
 runApp(app)
 
+cmu_graphics.run()
