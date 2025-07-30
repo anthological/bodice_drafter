@@ -1,11 +1,11 @@
-### import libraries
+### import stuff
 from datetime import date
 import csv
 
 
-### globals
 allMeasurements = ['neck', 'shoulder', 'front length', 'cross front','figure length','figure breadth', 'back length', 'cross back', 'bust', 'underbust', 'waist', 'high hip', 'low hip', 'side', 'armhole','front neck', 'back neck', 'half figure breadth', 'half cross front','half cross back', 'front bust', 'back bust', 'cup size','front waist', 'back waist', 'front armhole', 'back armhole']
 requiredMeasurements = allMeasurements[:15]
+#the required measurements are the ones taken, the rest are calculated
 
 allForms = ['00']
 for s in range(0, 24, 2): #womens sizes
@@ -14,7 +14,7 @@ for s in range(36, 52, 2): #mens sizes
     allForms.append(str(s))
 
 example_measurements = dict()
-for measurement in allMeasurements:
+for measurement in allMeasurements: #fills out dictionary with keys
     example_measurements[measurement]  = None
 example_measurements['neck']           = 16
 example_measurements['shoulder']       = 4.5
@@ -32,26 +32,28 @@ example_measurements['low hip']        = 44.5
 example_measurements['side']           = 10.5
 example_measurements['armhole']        = 16.25
 
-
+#used csv library example from documentation (see readme)
 with open('C:/Users/Janet/Documents/GitHub/bodice_drafter/dressform_measurements.csv', newline='') as wrapper:
     reader = csv.reader(wrapper)
     df = []
     for row in reader:
         df.append(row)
 
-beneviento = dict() #hehe
+
+beneviento = dict()
 for col in range(1, len(df[0])):
     beneviento[df[0][col]] = dict()
-    for rowName in allMeasurements:
-        beneviento[df[0][col]][rowName] = None
-
-
 for form in beneviento:
-    print(form)
-    formIndex = allForms.index(form)
-    dfCol = [formIndex+1]
-
-
+    dfCol = df[0].index(form) #df's column index of that form's measurements
+    for row in df:
+        if row[0] != 'size': #skipping the name
+            beneviento[form][row[0]] = row[dfCol]
+            if beneviento[form][row[0]] == "":
+                beneviento[form][row[0]] = None
+            else:
+                beneviento[form][row[0]] = float(row[dfCol])
+#beneviento is a dictionary of forms
+#each form is a dictionary of measurements
 
 ###
 
