@@ -3,66 +3,62 @@ from datetime import date
 import csv
 from cmu_graphics import *
 
-    allMeasurements = ['neck', 'shoulder', 'front length', 'cross front',
-    'figure length','figure breadth', 'back length', 'cross back', 'bust',
-    'underbust', 'waist', 'high hip', 'low hip', 'side', 'armhole','front neck',
-    'back neck', 'half figure breadth', 'half cross front','half cross back',
-    'front bust', 'back bust', 'cup size','front waist', 'back waist',
-    'front armhole', 'back armhole', 'waist height', 'high hip height',
-    'shoulder dart', 'side dart', 'armhole dart', 'center front dart',
-    'waist dart']
-    requiredMeasurements = allMeasurements[:15]
-    #the required measurements are the ones taken, the rest are calculated
+allMeasurements = ['neck', 'shoulder', 'front length', 'cross front',
+'figure length','figure breadth', 'back length', 'cross back', 'bust',
+'underbust', 'waist', 'high hip', 'low hip', 'side', 'armhole','front neck',
+'back neck', 'half figure breadth', 'half cross front','half cross back',
+'front bust', 'back bust', 'cup size','front waist', 'back waist',
+'front armhole', 'back armhole', 'waist height', 'high hip height',
+'shoulder dart', 'side dart', 'armhole dart', 'center front dart',
+'waist dart']
+requiredMeasurements = allMeasurements[:15]
 
-    allForms = ['00']
-    for s in range(0, 24, 2): #womens sizes
-        allForms.append(str(s))
-    for s in range(36, 52, 2): #mens sizes
-        allForms.append(str(s))
+allForms = ['00']
+for s in range(0, 24, 2): #womens sizes
+    allForms.append(str(s))
+for s in range(36, 52, 2): #mens sizes
+    allForms.append(str(s))
 
-    example_measurements = dict()
-    for measurement in allMeasurements: #fills out dictionary with keys
-        example_measurements[measurement]  = None
-    example_measurements['neck']           = 16
-    example_measurements['shoulder']       = 4.5
-    example_measurements['front length']   = 17
-    example_measurements['cross front']    = 14.5
-    example_measurements['figure length']  = 10.25
-    example_measurements['figure breadth'] = 7.75
-    example_measurements['back length']    = 18
-    example_measurements['cross back']     = 14.5
-    example_measurements['bust']           = 41
-    example_measurements['underbust']      = 33.75
-    example_measurements['waist']          = 37
-    example_measurements['high hip']       = 44.5
-    example_measurements['low hip']        = 44.5
-    example_measurements['side']           = 10.5
-    example_measurements['armhole']        = 16.25
+example_measurements = dict()
+for measurement in allMeasurements: #fills out dictionary with keys
+    example_measurements[measurement]  = None
+example_measurements['neck']           = 16
+example_measurements['shoulder']       = 4.5
+example_measurements['front length']   = 17
+example_measurements['cross front']    = 14.5
+example_measurements['figure length']  = 10.25
+example_measurements['figure breadth'] = 7.75
+example_measurements['back length']    = 18
+example_measurements['cross back']     = 14.5
+example_measurements['bust']           = 41
+example_measurements['underbust']      = 33.75
+example_measurements['waist']          = 37
+example_measurements['high hip']       = 44.5
+example_measurements['low hip']        = 44.5
+example_measurements['side']           = 10.5
+example_measurements['armhole']        = 16.25
 
-    #used csv library example from documentation (see readme)
-    with open('C:/Users/Janet/Documents/GitHub/bodice_drafter/dressform_measurements.csv', newline='') as wrapper:
-        reader = csv.reader(wrapper)
-        df = []
-        for row in reader:
-            df.append(row)
+with open('C:/Users/Janet/Documents/GitHub/bodice_drafter/smoother_measurements.csv', newline='') as wrapper:
+    reader = csv.reader(wrapper)
+    df = []
+    for row in reader:
+        df.append(row)
 
-    beneviento = dict()
-    for col in range(1, len(df[0])):
-        beneviento[df[0][col]] = dict()
-    for form in beneviento:
-        dfCol = df[0].index(form) #df's column index of that form's measurements
-        for row in df:
-            if row[0] != 'size': #skipping the name
-                beneviento[form][row[0]] = row[dfCol]
-                if beneviento[form][row[0]] == "":
-                    beneviento[form][row[0]] = None
-                else:
-                    beneviento[form][row[0]] = float(row[dfCol])
-    #beneviento is a dictionary of forms
-    #each form is a dictionary of measurements
+beneviento = dict()
+for col in range(1, len(df[0])):
+    beneviento[df[0][col]] = dict()
+for form in beneviento:
+    dfCol = df[0].index(form) #df's column index of that form's measurements
+    for row in df:
+        if row[0] != 'size': #skipping the name
+            beneviento[form][row[0]] = row[dfCol]
+            if beneviento[form][row[0]] == "":
+                beneviento[form][row[0]] = None
+            else:
+                beneviento[form][row[0]] = float(row[dfCol])
 
 
-### begin actual stuff
+### ^^^run that on reset
 
 def initiateEverything():
     allMeasurements = ['neck', 'shoulder', 'front length', 'cross front',
@@ -122,6 +118,7 @@ def initiateEverything():
                     beneviento[form][row[0]] = float(row[dfCol])
     #beneviento is a dictionary of forms
     #each form is a dictionary of measurements
+    return beneviento, allMeasurements, example_measurements
 
 ###
 
@@ -274,22 +271,39 @@ def calculateMeasurements(measures, height = 66):
     'centerFrontDart': CF_dart,
     'waistDart': waist_dart}
     return out
+###
 
-def interpolateMeasurements(measures, knownSize = None):
-    if knownSize != None:
-        base = beneviento[knownSize]
-    else:
-        base = beneviento[16] #no data in this one
-    #as long as you have bust, waist, and hip, you're fine
-    #find the B/W/H that's got the lowest mean distance from yours
-    #that's your size
-    #if there's any measurements other than that that you have
-    #then fill in those instead
-    return base
+def interpolateMeasurements(measures, size = ''):
+    if size == '':
+        size = guessSize(measures)
+        if size == None:
+            print("please supply bust, waist, and hip to interpolate measures")
+            return measures
+    constructed = beneviento[size]
+    for m in measures:
+        if measures[m] != None:
+            constructed[m] = measures[m]
 
 
+def guessSize(measures):
+    if (measures['bust'] == None or
+        measures['waist'] == None or
+        measures['low hip'] == None):
+            return None
+    closestSize = ''
+    closestSizeScore = 999
+    for size in beneviento:
+        if size != '':
+            bustScore = (measures['bust'] - beneviento[size]['bust'])**2 / beneviento[size]['bust']
+            waistScore = (measures['waist'] - beneviento[size]['waist'])**2 / beneviento[size]['waist']
+            hipScore = (measures['low hip'] - beneviento[size]['low hip'])**2 / beneviento[size]['low hip']
+            currScore = bustScore + 2*waistScore + hipScore
+            if currScore < closestSizeScore:
+                closestSize = size
+    return closestSize
 
-### draw front moulage
+
+### generate guides
 #i'm setting x=0 at the waist and y=0 at center front
 #with the side seam in the +x direction
 #adjusting for position on page happens later
@@ -313,14 +327,7 @@ def generateBackGuidePoints(m):
     out.append([(0,m['backLength']/2),(m['backBust'],m['backLength']/2)]) #bust line
 
 
-
-
-def drawFrontGuidelines(pointList):
-    for pair in range(len(pointList(0, len(pointList), 2))):
-        drawLine(x1, y1, x2, y2, fill='red', visible = True)
-
-
-
+### generate front moulage
 
 
 
@@ -356,9 +363,7 @@ def redrawAll(app):
         else:
             border1Color = background
         border1Width = 2
-        '''
-        NOTE: adjust rectangle width to always be wider than the text
-        '''
+#remember to adjust rectangle width to always be wider than the text
         drawRect(app.width//4, app.height//2, app.width//6, app.height//10,
                     fill = "white", border = border1Color,
                     borderWidth = border1Width, align = "center")
