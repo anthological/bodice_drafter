@@ -1,7 +1,7 @@
-
 from datetime import date
 import csv
 from cmu_graphics import *
+import math
 
 def initiateEverything(app):
     app.allMeasurements = ['neck', 'shoulder', 'front length', 'cross front',
@@ -247,9 +247,8 @@ def skipDart(latestPoint):
     elif latestPoint == 't':
         return 0.125
 
-def landOnGuideline(x1, y1, x2, y2, length):#   (x1,y1)     len
-    #assuming that you're in a situation like>  (x2,y2)________gth.
-    return
+def landOnGuideline(hyp, y):
+    return ((hyp)**2-(y**2)**0.5)
 
 def pointAlongDiagLine(x1, y1, length, x2 = None, y2 = None, angle = None):
     return
@@ -268,21 +267,44 @@ def getEllipse(x1, y1, x2, y2, x3, y3):
 
 #front draft
 def getPointF(m):
+    CF = m['shoulder']+m['shoulderDart']
+    CD = m['frontNeck']+0.125)/2
+    outY = m['frontLength']+(m['frontNeck']+0.125)/2
+    outX = ((CF)**2-(CD**2))**0.5 + m['frontNeck']
     return outX, outY
 
-def getPointG(m):
-    return outX, outY
+def getPointsGH(m, out):
+    CD = m['frontNeck']+0.125)/2
+    CF = m['shoulder']+m['shoulderDart']
+    DF = ((CF)**2-(CD**2)**0.5)
+    sinth = CD / CF
+    costh = DF / CF
+    CG = m['shoulder']
+    CH = m['shoulderDart'] + CG
+    dGy = CG*sinth
+    dGx = CG*costh
+    dHy = CH*sinth
+    dHx = CH*costh
+    Cx, Cy = out['C']
+    Gx = Cx+dGx
+    Gy = Cy-dGy
+    Hx = Cx+dHx
+    Hy = Cy-dHy
+    return Gx, Gy, Hx, Hy
 
-def getPointH(m):
-    return outX, outY
 
-def getPointL(m):
-    return outX, outY
+def getPointL(m, out):
+    AL = m['figureLength']
+    A0 = out['K'][0]
+    outX = A0
+    outY = out['A'][1] - ((AL)**2-(A0**2))**0.5 #yes i see how i can generalize
+    return outX, outY                           #but i have too many helpers as is
 
-def getPointaa(m):
-    return outX, outY
-
-def getPointcc(m):
+def getPointaa(m, out):
+    Xa = m['side'] + m['sideDart']
+    X0 = out['W'][0] - out['X'][0] #could just take m but this is easier to read
+    outX = out['W'][0]
+    outY = out['X'][1] + ((Xa)**2-(X0**2))**0.5
     return outX, outY
 
 def getPointdd(m):
@@ -350,7 +372,7 @@ Everything is in inches
 Input (m) is a full dictionary of measurements
 '''
 
-def generateFrontMoulagePoints(m):
+def generateFrontMoulagePoints(app, m):
     out = dict()
     #neck
     out['A'] = (0, m['frontLength'])
@@ -360,8 +382,8 @@ def generateFrontMoulagePoints(m):
     out['E'] = (m['frontNeck']+6, m['frontLength']+(m['frontNeck']+0.125)/2)
     #shoulder
     out['F'] = getPointF(m)
-    out['G'] = getPointG(m)
-    out['H'] = getPointH(m)
+    out['G'] = getPointsGH(m)[0], getPointsGH(m)[1]
+    out['H'] = getPointsGH(m)[2], getPointsGH(m)[3]
     #bust
     out['I'] = (0, m['frontLength']/2) #temp bust height
     out['J'] = (m['frontBust'], m['frontLength']/2)
@@ -408,10 +430,11 @@ def generateFrontMoulagePoints(m):
     out['nn']= (0, -m['lowHipDepth'])
     out['oo']= getPointoo(m) #didn't lower G and H to adjust for shoulder M
     out['pp']= getPointpp(m)
-    return out, ellipseA, ellipseN
+    app.frontPoints = out
+    return out
 
 
-def generateBackMoulagePoints(m):
+def generateBackMoulagePoints(app, m):
     out = dict()
     #neck
     out['a'] = (0, m['backLength'])
@@ -463,6 +486,7 @@ def generateBackMoulagePoints(m):
     out['KK']= getPointKK(m) #redo point DD
     out['LL']= getPointLL(m) #same length as II
     out['MM']= (0, -m['lowHipDepth'])
+    app.backPoints = out
     return out
 
 ### draw lines
@@ -512,9 +536,39 @@ fCurves=['AxC', 'gia']
 bCurves=['AgC', 'WfZ']
 
 
-for line in fLines:
-    print(line)
 
+def draftLines(app):
+    for line in fLines:
+        x1, y1 = app.frontPoints[line[0]]
+        x2, y2 = app.frontPoints[line[1]]
+        #translate inches to pixels here
+        drawLine(x1, y1, x2, y2, fill='black')
+
+    for line in bLines:
+        x1, y1 = app.backPoints[line[0]]
+        x2, y2 = app.backPoints[line[1]]
+        #translate inches to pixels here
+        drawLine(x1, y1, x2, y2, fill='black')
+
+
+def draftCurves(app):
+    #front neck
+    Ax, Ay = app.frontPoints['A']
+    Cx, Cy = app.frontPoints['C']
+    drawArc(Ax, Cy, (Cx-Ax), (Cy-Ay), 270, 90, fill = None, border = "black")
+    #front armhole
+    ggX, ggY = app.frontPoints['gg']
+    aaX, aaY = app.frontPoints['aa']
+    drawArc(aaX, ggY, (aaX-ggX), (ggY-aaY), 180, 90, fill = None, border = "black")
+    #back neck
+    aX, aY = app.backPoints['a']
+    cX, cY = app.backPoints['c']
+    drawArc(aX, cY, (cX-aX), (cY-aY), 180, 90, fill = None, border = "black")
+    #back armhole
+    wX, xY = app.backPoints['w']
+    zX, zY = app.backPoints['z']
+    drawArc(zX, wY, (wX-zX), (wY-zY), 270, 90, fill = None, border = "black")
+    #also gotta draw over all the radii in white
 
 
 ### CMU_GRAPHICS
