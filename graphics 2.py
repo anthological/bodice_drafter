@@ -35,6 +35,15 @@ def onAppStart(app):
     'shoulder dart', 'side dart', 'armhole dart', 'center front dart',
     'waist dart']
     app.takingInput = False
+    app.currentTextBox = ''
+    app.sizeList = ['00']
+    for s in range(0, 24, 2): #womens sizes
+        app.sizeList.append(str(s))
+    for s in range(36, 52, 2): #mens sizes
+        app.sizeList.append(str(s))
+    app.currentSize = ''
+    app.highlightCenter = False #this is for scene 'sizes'
+
 
 def loadBeneviento():
     #used csv library example from documentation (see readme)
@@ -77,7 +86,7 @@ def loadExample():
     return example
 
 
-def drawBackAndContinue(app, background):
+def drawBackAndContinue(app, background): #kinda broken?
         #draw back button
         if app.highlightedBack:
             border1Color = "black"
@@ -153,10 +162,19 @@ def redrawAll(app):
         drawRect(0,0,app.width, app.height, fill = background)
         drawBackAndContinue(app, background)
         #input place for size
+        if app.highlightCenter:
+            border = 'black'
+        else:
+            border = background
         drawRect(app.width//2, app.height//2, app.width//6, app.height//4,
-        fill = 'white', align = 'center')
+        fill = 'white', border = border, align = 'center')
         #mouseover to highlight
         #on click, app.addingText = True?
+        drawLabel(app.currentTextBox, app.width//2, app.height//2, size = 24,
+        align = 'center')
+        if app.takingInput and app.currentTextBox == '':
+            drawLabel('input size here', app.width//2, app.height//2, size = 24,
+            fill = 'black', opacity = 50, align = 'center')
 
 
     if app.scene == "drafter":
@@ -215,6 +233,12 @@ def onMouseMove(app, mouseX, mouseY):
                app.highlightedContinue = True
         else:
             app.highlightedContinue = False
+    if app.scene == 'sizes':
+        if ((app.width//2-app.width//12) < mouseX < (app.width//2+app.width//12) and
+            (app.height//2-app.height//8) < mouseY < (app.height//2+app.height//8)):
+            app.highlightCenter = True
+        else:
+            app.highlightCenter = False
 
 
 
@@ -256,11 +280,19 @@ def onMousePress(app, mouseX, mouseY):
 def onMouseRelease(app, mouseX, mouseY):
     if app.scene != "welcome":
         app.highlightedBack = False
+        app.currentTextBox = ''
 
 def onMouseDrag(app, mouseX, mouseY):
     if app.scene != "welcome":
         app.highlightedBack = False
 
+def onKeyPress(app, key):
+    if app.scene == 'sizes':
+        if app.takingInput and key.isdigit:
+            app.currentTextBox += key
+        if key == 'enter':
+            if app.currentTextBox in app.sizeList:
+                app.currentSize = app.currentTextBox
 
 
 
