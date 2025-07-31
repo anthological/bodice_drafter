@@ -1,71 +1,10 @@
+
 from datetime import date
 import csv
 from cmu_graphics import *
 
-### RUN ON KERNEL RESTART
-from datetime import date
-import csv
-from cmu_graphics import *
-
-allMeasurements = ['neck', 'shoulder', 'front length', 'cross front',
-'figure length','figure breadth', 'back length', 'cross back', 'bust',
-'underbust', 'waist', 'high hip', 'low hip', 'side', 'armhole','front neck',
-'back neck', 'half figure breadth', 'half cross front','half cross back',
-'front bust', 'back bust', 'cup size','front waist', 'back waist',
-'front armhole', 'back armhole', 'waist height', 'high hip height',
-'shoulder dart', 'side dart', 'armhole dart', 'center front dart',
-'waist dart']
-requiredMeasurements = allMeasurements[:15]
-
-allForms = ['00']
-for s in range(0, 24, 2): #womens sizes
-    allForms.append(str(s))
-for s in range(36, 52, 2): #mens sizes
-    allForms.append(str(s))
-
-example_measurements = dict()
-for measurement in allMeasurements: #fills out dictionary with keys
-    example_measurements[measurement]  = None
-example_measurements['neck']           = 16
-example_measurements['shoulder']       = 4.5
-example_measurements['front length']   = 17
-example_measurements['cross front']    = 14.5
-example_measurements['figure length']  = 10.25
-example_measurements['figure breadth'] = 7.75
-example_measurements['back length']    = 18
-example_measurements['cross back']     = 14.5
-example_measurements['bust']           = 41
-example_measurements['underbust']      = 33.75
-example_measurements['waist']          = 37
-example_measurements['high hip']       = 44.5
-example_measurements['low hip']        = 44.5
-example_measurements['side']           = 10.5
-example_measurements['armhole']        = 16.25
-
-with open('C:/Users/Janet/Documents/GitHub/bodice_drafter/smoother_measurements.csv', newline='') as wrapper:
-    reader = csv.reader(wrapper)
-    df = []
-    for row in reader:
-        df.append(row)
-
-beneviento = dict()
-for col in range(1, len(df[0])):
-    beneviento[df[0][col]] = dict()
-for form in beneviento:
-    dfCol = df[0].index(form) #df's column index of that form's measurements
-    for row in df:
-        if row[0] != 'size': #skipping the name
-            beneviento[form][row[0]] = row[dfCol]
-            if beneviento[form][row[0]] == "":
-                beneviento[form][row[0]] = None
-            else:
-                beneviento[form][row[0]] = float(row[dfCol])
-
-
-### begin actual stuff
-
-def initiateEverything():
-    allMeasurements = ['neck', 'shoulder', 'front length', 'cross front',
+def initiateEverything(app):
+    app.allMeasurements = ['neck', 'shoulder', 'front length', 'cross front',
     'figure length','figure breadth', 'back length', 'cross back', 'bust',
     'underbust', 'waist', 'high hip', 'low hip', 'side', 'armhole','front neck',
     'back neck', 'half figure breadth', 'half cross front','half cross back',
@@ -73,33 +12,33 @@ def initiateEverything():
     'front armhole', 'back armhole', 'waist height', 'high hip height',
     'shoulder dart', 'side dart', 'armhole dart', 'center front dart',
     'waist dart']
-    requiredMeasurements = allMeasurements[:15]
+    app.requiredMeasurements = allMeasurements[:15]
     #the required measurements are the ones taken, the rest are calculated
 
-    allForms = ['00']
+    app.allForms = ['00']
     for s in range(0, 24, 2): #womens sizes
         allForms.append(str(s))
     for s in range(36, 52, 2): #mens sizes
         allForms.append(str(s))
 
-    example_measurements = dict()
-    for measurement in allMeasurements: #fills out dictionary with keys
-        example_measurements[measurement]  = None
-    example_measurements['neck']           = 16
-    example_measurements['shoulder']       = 4.5
-    example_measurements['front length']   = 17
-    example_measurements['cross front']    = 14.5
-    example_measurements['figure length']  = 10.25
-    example_measurements['figure breadth'] = 7.75
-    example_measurements['back length']    = 18
-    example_measurements['cross back']     = 14.5
-    example_measurements['bust']           = 41
-    example_measurements['underbust']      = 33.75
-    example_measurements['waist']          = 37
-    example_measurements['high hip']       = 44.5
-    example_measurements['low hip']        = 44.5
-    example_measurements['side']           = 10.5
-    example_measurements['armhole']        = 16.25
+    app.example = dict()
+    for measurement in app.allMeasurements: #fills out dictionary with keys
+        app.example[measurement]  = None
+    app.example['neck']           = 16
+    app.example['shoulder']       = 4.5
+    app.example['front length']   = 17
+    app.example['cross front']    = 14.5
+    app.example['figure length']  = 10.25
+    app.example['figure breadth'] = 7.75
+    app.example['back length']    = 18
+    app.example['cross back']     = 14.5
+    app.example['bust']           = 41
+    app.example['underbust']      = 33.75
+    app.example['waist']          = 37
+    app.example['high hip']       = 44.5
+    app.example['low hip']        = 44.5
+    app.example['side']           = 10.5
+    app.example['armhole']        = 16.25
 
     #used csv library example from documentation (see readme)
     with open('C:/Users/Janet/Documents/GitHub/bodice_drafter/smoother_measurements.csv', newline='') as wrapper:
@@ -108,65 +47,34 @@ def initiateEverything():
         for row in reader:
             df.append(row)
 
-    beneviento = dict()
+    app.beneviento = dict()
     for col in range(1, len(df[0])):
-        beneviento[df[0][col]] = dict()
-    for form in beneviento:
+        app.beneviento[df[0][col]] = dict()
+    for form in app.beneviento:
         dfCol = df[0].index(form) #df's column index of that form's measurements
         for row in df:
             if row[0] != 'size': #skipping the name
-                beneviento[form][row[0]] = row[dfCol]
-                if beneviento[form][row[0]] == "":
-                    beneviento[form][row[0]] = None
+                app.beneviento[form][row[0]] = row[dfCol]
+                if app.beneviento[form][row[0]] == "":
+                    app.beneviento[form][row[0]] = None
                 else:
-                    beneviento[form][row[0]] = float(row[dfCol])
-    #beneviento is a dictionary of forms
+                    app.beneviento[form][row[0]] = float(row[dfCol])
+    #app.beneviento is a dictionary of forms
     #each form is a dictionary of measurements
-    return beneviento, allMeasurements, example_measurements
+### fill measurements
 
-### user stuff
-#we'll come back to this if we have time
-
-class user:
-    def __init__(self, name, fittings = []): #user, string, list of fittings
-        self.name = name
-        self.initialized = date.today()
-        self.fittings = fittings
-        self.fittings = self.sortFittings(self)
-        self.measurements = self.fittings[0] #most recent fitting
-
-    def sortFittings(self): #list of fittings
-        sortedFittings = copy.deepcopy(self.fittings)
-        #gotta figure out how to sort datetimes.date
-        return sortedFittings
-
-class fitting:
-    def __init__(self, username = None): #fitting, string, dict
-        self.measurements = dict()
-        for m in allMeasurements:
-            self.measurements[m] = None
-        self.date = date.today()
-        if username != None:
-            for m in allMeasurements:
-                if user.measurements[m] != None:
-                    self.measurements[m] = user.measurements[m]
-
-
-### fill out measurements
-
-
-def guessSize(measures):
+def guessSize(app, measures):
     if (measures['bust'] == None or
         measures['waist'] == None or
         measures['low hip'] == None):
             return None
     closestSize = ''
     closestSizeScore = 999
-    for size in beneviento:
+    for size in app.beneviento:
         if size != '':
-            bustScore = (measures['bust'] - beneviento[size]['bust'])**2 / beneviento[size]['bust']
-            waistScore = (measures['waist'] - beneviento[size]['waist'])**2 / beneviento[size]['waist']
-            hipScore = (measures['low hip'] - beneviento[size]['low hip'])**2 / beneviento[size]['low hip']
+            bustScore = (measures['bust'] - app.beneviento[size]['bust'])**2 / app.beneviento[size]['bust']
+            waistScore = (measures['waist'] - app.beneviento[size]['waist'])**2 / app.beneviento[size]['waist']
+            hipScore = (measures['low hip'] - app.beneviento[size]['low hip'])**2 / app.beneviento[size]['low hip']
             currScore = bustScore + 2*waistScore + hipScore
             if currScore < closestSizeScore:
                 closestSize = size
@@ -179,7 +87,7 @@ def interpolateMeasurements(measures, size = ''):
         if size == None:
             print("please supply bust, waist, and hip")
             return None
-    constructed = beneviento[size]
+    constructed = app.beneviento[size]
     for m in measures:
         if measures[m] != None:
             constructed[m] = measures[m]
@@ -308,16 +216,7 @@ def calculateMeasurements(measures, height = 66):
     'waistDart': waist_dart}
     return out
 
-exampleMeasures = calculateMeasurements(example_measurements)
-
-### generate guides
-'''
-(0,0) is at the center waist for both front and back drafts
-The front side seam is in the +x direction
-The back side seam is in the -x direction
-Everything is in inches
-Input m is a full dictionary of measurements
-'''
+### generate guidelines
 
 def generateFrontGuidePoints(m): #m = measurements dictionary
     out = [(0,0),(m['frontLowHip'],0)] #waist line
@@ -337,7 +236,7 @@ def generateBackGuidePoints(m): #m = measurements dictionary
     out.append([(0, m['backLength']/2),(m['backBust'], m['backLength']/2)]) #bust line
     return out
 
-### geometry
+### helpers
 
 
 def skipDart(latestPoint):
@@ -365,86 +264,90 @@ def getEllipse(x1, y1, x2, y2, x3, y3):
     return centerX, centerY, width, height
 
 
-### helpers / helper-organizers
+### helper wrappers
 
 #front draft
-def getpointF(m):
+def getPointF(m):
     return outX, outY
 
-def getpointG(m):
+def getPointG(m):
     return outX, outY
 
-def getpointH(m):
+def getPointH(m):
     return outX, outY
 
-def getpointL(m):
+def getPointL(m):
     return outX, outY
 
-def getpointaa(m):
+def getPointaa(m):
     return outX, outY
 
-def getpointcc(m):
+def getPointcc(m):
     return outX, outY
 
-def getpointdd(m):
+def getPointdd(m):
     return outX, outY
 
-def getpointee(m):
+def getPointee(m):
     return outX, outY
 
-def getpointjj(m):
+def getPointjj(m):
     return outX, outY
 
-def getpointkk(m):
+def getPointkk(m):
     return outX, outY
 
-def getpointmm(m):
+def getPointmm(m):
+    return outX, outY
+
+def getPointoo(m):
+    return outX, outY
+
+def getPointpp(m):
     return outX, outY
 
 #back draft
-def getpointd(m):
+def getPointd(m):
     return outX, outY
 
-def getpointe(m):
+def getPointe(m):
     return outX, outY
 
-def getpointf(m):
+def getPointf(m):
     return outX, outY
 
-def getpointz(m):
+def getPointz(m):
     return outX, outY
 
-def getpointCC(m):
+def getPointCC(m):
     return outX, outY
 
-def getpointDD(m):
+def getPointDD(m):
     return outX, outY
 
-def getpointHH(m):
+def getPointHH(m):
     return outX, outY
 
-def getpointII(m):
+def getPointII(m):
     return outX, outY
 
-def getpointJJ(m):
+def getPointJJ(m):
     return outX, outY
 
-def getpointKK(m):
+def getPointKK(m):
     return outX, outY
 
-def getpointLL(m):
+def getPointLL(m):
     return outX, outY
 
 
-
-
-### generate front moulage
+### generate points
 '''
 (0,0) is at the center waist for both front and back drafts
 The front side seam is in the +x direction
 The back side seam is in the -x direction
 Everything is in inches
-Input m is a full dictionary of measurements
+Input (m) is a full dictionary of measurements
 '''
 
 def generateFrontMoulagePoints(m):
@@ -486,14 +389,11 @@ def generateFrontMoulagePoints(m):
     out['Z'] = (m['frontLowHip'], -m['lowHipDepth'])
     #side
     out['aa']= getPointaa(m) #x should equal m['frontBust']
-    #final bust
     out['bb']= (0, out['aa'][1])
-    #waist shaping
-    out['cc']= getPointcc(m) #up 3 inches from X along side, then in 0.125
+    out['cc']= None #skip waist shaping
     out['dd']= getPointdd(m) #along side, up 0.5 from w
     out['ee']= getPointee(m) #along side, dn 0.5 from w
-    #you can bump out the waist dart, go down VN/4 then out 0.25
-    out['ff']= None #shoulder dart shaping, unused
+    out['ff']= None #skip shoulder dart bowing
     out['gg']= (m['crossFront']+skipDart('gg'), m['frontLength']-3)
     out['hh']= (m['crossFront']+skipDart('gg'), out['aa'][1])
     #armhole curve
@@ -505,6 +405,9 @@ def generateFrontMoulagePoints(m):
     #neckline curve
     ellipseN = getEllipse(out['A'], out['xx'], out['C'])
     out['mm']= getPointmm(m, ellipseN)
+    out['nn']= (0, -m['lowHipDepth'])
+    out['oo']= getPointoo(m) #didn't lower G and H to adjust for shoulder M
+    out['pp']= getPointpp(m)
     return out, ellipseA, ellipseN
 
 
@@ -522,7 +425,7 @@ def generateBackMoulagePoints(m):
     out['g'] = None #these aren't used for a sloper
     out['h'] = None #but i'm still gonna keep track
     out['i'] = None #just in case
-    out['j'] = (0, m['backLength']/4*3))
+    out['j'] = (0, m['backLength']/4*3)
     #waist shaping
     out['k'] = (-m['backWaist']/2, 0)
     out['l'] = (-m['backWaist']/2-m['waistDart'], 0)
@@ -537,13 +440,13 @@ def generateBackMoulagePoints(m):
     out['u'] = (0, -m['lowHipDepth'])
     out['v'] = (-m['backLowHip'], -m['lowHipDepth'])
     #cross back
-    out['w'] = (-m['crossBack'], m['backLength']/4*3))
+    out['w'] = (-m['crossBack'], m['backLength']/4*3)
     out['x'] = (0, m['backLength']/2)
     out['y'] = (-m['backBust'], m['backLength']/2)
     #side
     out['z'] = getPointz(m)
     out['AA']= (0, out['z'][1])
-    out['BB']= None #waist shaping, like front 'cc'
+    out['BB']= None #waist shaping
     out['CC']= getPointCC(m)#along line KE, y = out['z'][1]-1
     out['DD']= getPointDD(m) #along line KE, y = out['e'][1]-3.5
     #armhole
@@ -559,7 +462,59 @@ def generateBackMoulagePoints(m):
     out['JJ']= getPointJJ(m)
     out['KK']= getPointKK(m) #redo point DD
     out['LL']= getPointLL(m) #same length as II
+    out['MM']= (0, -m['lowHipDepth'])
     return out
+
+### draw lines
+#front lines:
+fLines=[('C', 'mm'),
+        ('mm','gg'),
+        ('aa','dd'),
+        ('dd','ee'),
+        ('ee', 'X'),
+        ('X', 'Y' ),
+        ('Y', 'Z' ),
+        ('Z', 'nn'),
+        ('nn', 'A'),
+        ('oo', 'L'),
+        ('L', 'pp'),
+        ('ii', 'L'),
+        ('L', 'kk'),
+        ('dd', 'L'),
+        ('L', 'ee'),
+        ('V', 'Q'),
+        ('Q', 'U'),
+        ('U', 'S'),
+        ('S', 'T'),
+        ('T', 'P'),
+        ('P', 'V')]
+
+#back lines:
+bLines=[('c','i'),
+        ('i','j'),
+        ('j','h'),
+        ('h','WW'),
+        ('ZZ','MM'),
+        ('MM','TT'),
+        ('TT','VV'),
+        ('VV','m'),
+        ('m','AA'),
+        ('c','LL'),
+        ('LL','QQ'),
+        ('QQ','OO'),
+        ('OO','PP'),
+        ('PP','KK'),
+        ('KK','c'),
+        ('i','k'),
+        ('k','j')]
+
+fCurves=['AxC', 'gia']
+bCurves=['AgC', 'WfZ']
+
+
+for line in fLines:
+    print(line)
+
 
 
 ### CMU_GRAPHICS
@@ -733,11 +688,42 @@ def onMouseRelease(app, mouseX, mouseY):
 
 
 
-###
+### run!
 
 
 def main():
-    initiateEverything()
     runApp()
 
 main()
+
+
+
+
+### incomplete
+#we'll come back to this if we have time
+
+class user:
+    def __init__(self, name, fittings = []): #user, string, list of fittings
+        self.name = name
+        self.initialized = date.today()
+        self.fittings = fittings
+        self.fittings = self.sortFittings(self)
+        self.measurements = self.fittings[0] #most recent fitting
+
+    def sortFittings(self): #list of fittings
+        sortedFittings = copy.deepcopy(self.fittings)
+        #gotta figure out how to sort datetimes.date
+        return sortedFittings
+
+class fitting:
+    def __init__(self, username = None): #fitting, string, dict
+        self.measurements = dict()
+        for m in allMeasurements:
+            self.measurements[m] = None
+        self.date = date.today()
+        if username != None:
+            for m in allMeasurements:
+                if user.measurements[m] != None:
+                    self.measurements[m] = user.measurements[m]
+
+
