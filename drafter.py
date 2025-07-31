@@ -331,11 +331,11 @@ def generateFrontGuidePoints(m): #m = measurements dictionary
 
 def generateBackGuidePoints(m): #m = measurements dictionary
     out = [(0,0),(m['backLowHip'],0)] #waist line
-    out.append([(0,-m['highHipDepth']),(m['backLowHip'],-m['highHipDepth'])]) #high hip line
-    out.append([(0,-m['lowHipDepth']),(m['backLowHip'],-m['lowHipDepth'])]) #low hip line
-    out.append([(0,m['backLength']),(9,m['backLength'])]) #neck/shoulder line
-    out.append([(0,m['backLength']/4*3),(9,m['backLength']/4*3)]) #cross-back line
-    out.append([(0,m['backLength']/2),(m['backBust'],m['backLength']/2)]) #bust line
+    out.append([(0, -m['highHipDepth']),(m['backLowHip'], -m['highHipDepth'])]) #high hip line
+    out.append([(0, -m['lowHipDepth']),(m['backLowHip'], -m['lowHipDepth'])]) #low hip line
+    out.append([(0, m['backLength']),(9,m['backLength'])]) #neck/shoulder line
+    out.append([(0, m['backLength']/4*3),(9, m['backLength']/4*3)]) #cross-back line
+    out.append([(0, m['backLength']/2),(m['backBust'], m['backLength']/2)]) #bust line
     return out
 
 ### geometry
@@ -357,8 +357,10 @@ def pointAlongDiagLine(x1, y1, length, x2 = None, y2 = None, angle = None):
 def skipDart(latestPoint):
     if latestPoint == 'Y':
         return 0.25 #come back to this math Later
-    if latestPoint == 'gg'
+    elif latestPoint == 'gg':
         return 0.25
+    elif latestPoint == 't':
+        return 0.125
 
 def makeEllipse(x1, y1, x2, y2, x3, y3):
     pass
@@ -412,6 +414,7 @@ def generateFrontMoulagePoints(m):
     out['aa']= getPointaa(m) #x should equal m['frontBust']
     #final bust
     out['bb']= (0, out['aa'][1])
+    #waist shaping
     out['cc']= getPointcc(m) #up 3 inches from X along side, then in 0.125
     out['dd']= getPointdd(m) #along side, up 0.5 from w
     out['ee']= getPointee(m) #along side, dn 0.5 from w
@@ -421,14 +424,17 @@ def generateFrontMoulagePoints(m):
     out['hh']= (m['crossFront']+skipDart('gg'), out['aa'][1])
     #armhole curve
     out['ii']= (m['crossFront']+skipDart('gg')+1/2**0.5, out['aa'][1]+1/2**0.5)
-    ellipse = getEllipse(out['gg'], out['ii'], out['aa'])
-    out['jj']= getPointjj(m, ellipse)
-    out['kk']= getPointkk(m, ellipse)
+    ellipseA = getEllipse(out['gg'], out['ii'], out['aa'])
+    out['jj']= getPointjj(m, ellipseA)
+    out['kk']= getPointkk(m, ellipseA)
     out['ll']= (out['B'][0]-1/2**0.5, out['B'][0]+1/2**0.5)
-    out['mm']= getPointmm(m, ellipse)
-    return out
+    #neckline curve
+    ellipseN = getEllipse(out['A'], out['xx'], out['C'])
+    out['mm']= getPointmm(m, ellipseN)
+    return out, ellipseA, ellipseN
 
 def generateBackMoulagePoints(m):
+    out = dict()
     #neck
     out['a'] = (0, m['backLength'])
     out['b'] = (-m['backNeck'], m['backLength'])
@@ -438,35 +444,47 @@ def generateBackMoulagePoints(m):
     out['e'] = getPointe(m)
     out['f'] = getPointf(m)
     #back contour
-    out['g'] = None #these aren't used in sloper but good to keep track
-    out['h'] = None
-    out['i'] = None
-    out['j'] = None
+    out['g'] = None #these aren't used for a sloper
+    out['h'] = None #but i'm still gonna keep track
+    out['i'] = None #just in case
+    out['j'] = (0, m['backLength']/4*3))
     #waist shaping
     out['k'] = (-m['backWaist']/2, 0)
     out['l'] = (-m['backWaist']/2-m['waistDart'], 0)
-    out['m'] =
-    out['n'] =
-    out['o'] =
-    out['p'] =
-    out['q'] =
-    out['r'] =
-    out['s'] =
-    out['t'] =
-    out['u'] =
-    out['v'] =
-    out['w'] =
-    out['x'] =
-    out['y'] =
-    out['z'] =
-    out['AA']=
-    out['BB']=
-    out['CC']=
-    out['DD']=
-    out['EE']=
-    out['FF']=
-    out = dict()
-
+    out['m'] = (-m['backWaist']-m['waistDart'],0)
+    out['n'] = (-m['backWaist']/2-m['waistDart']/2, -m['lowHipDepth'])
+    out['o'] = (-m['backWaist']/2-m['waistDart']/2, -m['lowHipDepth']+3)
+    out['p'] = (-m['backWaist']/2, -0.5)
+    out['q'] = (-m['backWaist']/2-m['waistDart'], -0.5)
+    out['r'] = (0, -0.5)
+    out['s'] = None #more back contour
+    out['t'] = (-m['backHighHip']+skipDart('t'), -m['highHipDepth'])
+    out['u'] = (0, -m['lowHipDepth'])
+    out['v'] = (-m['backLowHip'], -m['lowHipDepth'])
+    #cross back
+    out['w'] = (-m['crossBack'], m['backLength']/4*3))
+    out['x'] = (0, m['backLength']/2)
+    out['y'] = (-m['backBust'], m['backLength']/2)
+    #side
+    out['z'] = getPointz(m)
+    out['AA']= (0, out['z'][1])
+    out['BB']= None #waist shaping, like front 'cc'
+    out['CC']= getPointCC(m)#along line KE, y = out['z'][1]-1
+    out['DD']= getPointDD(m) #along line KE, y = out['e'][1]-3.5
+    #armhole
+    out['EE']= (-m['crossBack'], out['z'][1])
+    out['FF']= (-m['crossBack']-1/2**0.5, out['z'][1]+1/2**0.5)
+    ellipseA = getEllipse(out['w'], out['FF'], out['z'])
+    #neck
+    out['GG']= (-m['backNeck']+0.5/2**0.5, m['backLength']+0.5/2**0.5)
+    ellipseN = getEllipse(out['w'], out['FF'], out['z'])
+    out['HH']= getPointHH(m, ellipseA) #tracing ellipseA
+    #redo shoulder
+    out['II']= getPointII(m)
+    out['JJ']= getPointJJ(m)
+    out['KK']= getPointKK(m) #redo point DD
+    out['LL']= truePointJJ(m) #same length as II
+    return out
 
 
 ### ALL THE CMU_GRAPHICS STUFF
@@ -516,11 +534,11 @@ def redrawAll(app):
         background = "mistyRose"
         drawRect(0,0,app.width, app.height, fill = background)
         #draw instructions
-        TextLine1 = '..asdfjhaskjdfh'
-        TextLine2 = 'asdsfj'
-        TextLine3 = 'asfasd'
-        TextLine4 = 'asd'
-        TextLine5 = 'asdfasdf'
+        TextLine1 = 'Please see attached guide on how to take measurements.'
+        TextLine2 = "If you can't take all of these measurements yourself,"
+        TextLine3 = 'feel free to leave some blank. You can also estimate your'
+        TextLine4 = 'measurements with just your bust/chest, waist, and hip.'
+        TextLine5 = 'These are taken at the widest, and narrowest points.'
         drawLabel(TextLine1, app.width//6, app.height//4 + 00, align = "left-top")
         drawLabel(TextLine2, app.width//6, app.height//4 + 12, align = "left-top")
         drawLabel(TextLine3, app.width//6, app.height//4 + 24, align = "left-top")
@@ -648,7 +666,3 @@ def main():
     runApp()
 
 main()
-
-
-
-
