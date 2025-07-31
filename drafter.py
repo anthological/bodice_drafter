@@ -125,6 +125,7 @@ def initiateEverything():
     return beneviento, allMeasurements, example_measurements
 
 ### user stuff
+#we'll come back to this if we have time
 
 class user:
     def __init__(self, name, fittings = []): #user, string, list of fittings
@@ -136,7 +137,6 @@ class user:
 
     def sortFittings(self): #list of fittings
         sortedFittings = copy.deepcopy(self.fittings)
-        #do i need to make fitting IDs
         #gotta figure out how to sort datetimes.date
         return sortedFittings
 
@@ -311,7 +311,6 @@ def calculateMeasurements(measures, height = 66):
 exampleMeasures = calculateMeasurements(example_measurements)
 
 ### generate guides
-
 '''
 (0,0) is at the center waist for both front and back drafts
 The front side seam is in the +x direction
@@ -340,19 +339,6 @@ def generateBackGuidePoints(m): #m = measurements dictionary
 
 ### geometry
 
-def dist(x1, y1, x2, y2):
-    return ((x2-x1)**2+(y2-y1)**2)**0.5
-
-def getSecondLeg(triangle):
-    #cry
-    return
-
-def landOnGuideline(x1, y1, x2, y2, length, call):
-    if call == "F": #xy1 = C, xy2 = D
-        pass
-
-def pointAlongDiagLine(x1, y1, length, x2 = None, y2 = None, angle = None):
-    pass
 
 def skipDart(latestPoint):
     if latestPoint == 'Y':
@@ -362,16 +348,104 @@ def skipDart(latestPoint):
     elif latestPoint == 't':
         return 0.125
 
-def makeEllipse(x1, y1, x2, y2, x3, y3):
-    pass
+def landOnGuideline(x1, y1, x2, y2, length):#   (x1,y1)     len
+    #assuming that you're in a situation like>  (x2,y2)________gth.
+    return
 
-def getArc(ellipse, xy1, xy2, xy3):
-    pass
+def pointAlongDiagLine(x1, y1, length, x2 = None, y2 = None, angle = None):
+    return
 
-def pointAlongEllipse(ellipse, xy, length, direction):
-    pass
+def getArc(ellipse):
+    return centerX, centerY, width, height, startAngle, sweepAngle
+
+def walkAlongEllipse(ellipse, xy, length, direction):
+    return
+
+def getEllipse(x1, y1, x2, y2, x3, y3):
+    return centerX, centerY, width, height
+
+
+### helpers / helper-organizers
+
+#front draft
+def getpointF(m):
+    return outX, outY
+
+def getpointG(m):
+    return outX, outY
+
+def getpointH(m):
+    return outX, outY
+
+def getpointL(m):
+    return outX, outY
+
+def getpointaa(m):
+    return outX, outY
+
+def getpointcc(m):
+    return outX, outY
+
+def getpointdd(m):
+    return outX, outY
+
+def getpointee(m):
+    return outX, outY
+
+def getpointjj(m):
+    return outX, outY
+
+def getpointkk(m):
+    return outX, outY
+
+def getpointmm(m):
+    return outX, outY
+
+#back draft
+def getpointd(m):
+    return outX, outY
+
+def getpointe(m):
+    return outX, outY
+
+def getpointf(m):
+    return outX, outY
+
+def getpointz(m):
+    return outX, outY
+
+def getpointCC(m):
+    return outX, outY
+
+def getpointDD(m):
+    return outX, outY
+
+def getpointHH(m):
+    return outX, outY
+
+def getpointII(m):
+    return outX, outY
+
+def getpointJJ(m):
+    return outX, outY
+
+def getpointKK(m):
+    return outX, outY
+
+def getpointLL(m):
+    return outX, outY
+
+
+
 
 ### generate front moulage
+'''
+(0,0) is at the center waist for both front and back drafts
+The front side seam is in the +x direction
+The back side seam is in the -x direction
+Everything is in inches
+Input m is a full dictionary of measurements
+'''
 
 def generateFrontMoulagePoints(m):
     out = dict()
@@ -390,7 +464,7 @@ def generateFrontMoulagePoints(m):
     out['J'] = (m['frontBust'], m['frontLength']/2)
     out['K'] = (m['halfFigureBreadth'], m['frontLength']/2)
     #high figure point
-    out['L'] = getHighFigure(m)
+    out['L'] = getPointL(m)
     HFx, HFy = out['L'][0], out['L'][1]
     out['M'] = (0, HFy)
     #waist dart
@@ -432,6 +506,7 @@ def generateFrontMoulagePoints(m):
     ellipseN = getEllipse(out['A'], out['xx'], out['C'])
     out['mm']= getPointmm(m, ellipseN)
     return out, ellipseA, ellipseN
+
 
 def generateBackMoulagePoints(m):
     out = dict()
@@ -483,11 +558,11 @@ def generateBackMoulagePoints(m):
     out['II']= getPointII(m)
     out['JJ']= getPointJJ(m)
     out['KK']= getPointKK(m) #redo point DD
-    out['LL']= truePointJJ(m) #same length as II
+    out['LL']= getPointLL(m) #same length as II
     return out
 
 
-### ALL THE CMU_GRAPHICS STUFF
+### CMU_GRAPHICS
 
 def onAppStart(app):
     app.scene = "welcome" #'measurements','sizes','drafter','output'
@@ -538,7 +613,7 @@ def redrawAll(app):
         TextLine2 = "If you can't take all of these measurements yourself,"
         TextLine3 = 'feel free to leave some blank. You can also estimate your'
         TextLine4 = 'measurements with just your bust/chest, waist, and hip.'
-        TextLine5 = 'These are taken at the widest, and narrowest points.'
+        TextLine5 = 'These are taken at the widest and narrowest points.'
         drawLabel(TextLine1, app.width//6, app.height//4 + 00, align = "left-top")
         drawLabel(TextLine2, app.width//6, app.height//4 + 12, align = "left-top")
         drawLabel(TextLine3, app.width//6, app.height//4 + 24, align = "left-top")
