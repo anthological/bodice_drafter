@@ -2,9 +2,53 @@ from datetime import date
 import csv
 from cmu_graphics import *
 import math
+import copy
+
 ##
 
-def initiateEverything():
+def initiateEverything(app):
+#front lines:
+    app.fLines=[('C', 'mm'),
+            ('mm','gg'),
+            ('aa','dd'),
+            ('dd','ee'),
+            ('ee', 'X'),
+            ('X', 'Y' ),
+            ('Y', 'Z' ),
+            ('Z', 'nn'),
+            ('nn', 'A'),
+            #('oo', 'L'),
+            #('L', 'pp'),
+            ('ii', 'L'),
+            ('L', 'kk'),
+            ('dd', 'L'),
+            ('L', 'ee'),
+            ('V', 'Q'),
+            ('Q', 'U'),
+            ('U', 'S'),
+            ('S', 'T'),
+            ('T', 'P'),
+            ('P', 'V')]
+
+    #back lines:
+    app.bLines=[('c','i'),
+            ('i','j'),
+            ('j','h'),
+            ('h','WW'),
+            ('ZZ','MM'),
+            ('MM','TT'),
+            ('TT','VV'),
+            ('VV','m'),
+            ('m','AA'),
+            #('c','LL'),
+            #('LL','QQ'),
+            ('QQ','OO'),
+            ('OO','PP'),
+            #('PP','KK'),
+            #('KK','c'),
+            ('i','k'),
+            ('k','j')]
+
     allMeasurements = ['neck', 'shoulder', 'front length', 'cross front',
     'figure length','figure breadth', 'back length', 'cross back', 'bust',
     'underbust', 'waist', 'high hip', 'low hip', 'side', 'armhole','front neck',
@@ -93,7 +137,7 @@ def interpolateMeasurements(measures, size = ''):
     for m in measures:
         if measures[m] != None:
             constructed[m] = measures[m]
-
+    return constructed
 
 
 def calculateMeasurements(measures, height = 66):
@@ -214,8 +258,8 @@ def calculateMeasurements(measures, height = 66):
     'shoulderDart': shoulder_dart,
     'sideDart': side_dart,
     'armholeDart': armhole_dart,
-    'centerFrontDart': CF_dart,
-    'waistDart': waist_dart}
+    'centerFrontDart': CF_dart, #i feel like there's an easier way to do this
+    'waistDart': waist_dart}    #but some of my variable names are weird
     return out
 
 ### generate guidelines
@@ -243,7 +287,7 @@ def generateBackGuidePoints(m): #m = measurements dictionary
 
 def skipDart(latestPoint):
     if latestPoint == 'Y':
-        return 0.25 #come back to this math Later
+        return 0.25 #close enough
     elif latestPoint == 'gg':
         return 0.25
     elif latestPoint == 't':
@@ -252,17 +296,17 @@ def skipDart(latestPoint):
 def getLeg(hyp, leg):
     return ((hyp)**2-(leg**2)**0.5)
 
-def pointAlongDiagLine(x1, y1, length, x2 = None, y2 = None, angle = None):
-    return
+#def pointAlongDiagLine(x1, y1, length, x2 = None, y2 = None, angle = None):
+    #return
 
-def getArc(ellipse):
-    return centerX, centerY, width, height, startAngle, sweepAngle
+#def getArc(ellipse):
+    #return centerX, centerY, width, height, startAngle, sweepAngle
 
-def walkAlongEllipse(ellipse, xy, length, direction):
-    return
+#def walkAlongEllipse(ellipse, xy, length, direction):
+    #return
 
-def getEllipse(x1, y1, x2, y2, x3, y3):
-    return centerX, centerY, width, height
+#def getEllipse(x1, y1, x2, y2, x3, y3):
+    #return centerX, centerY, width, height
 
 
 ### helper wrappers
@@ -270,13 +314,13 @@ def getEllipse(x1, y1, x2, y2, x3, y3):
 #front draft
 def getPointF(m): #land on line
     CF = m['shoulder']+m['shoulderDart']
-    CD = m['frontNeck']+0.125)/2
+    CD = m(['frontNeck']+0.125)/2
     outY = m['frontLength']+(m['frontNeck']+0.125)/2
     outX = getLeg(CF, CD) + m['frontNeck']
     return outX, outY
 
 def getPointsGH(m, out): #walk along line
-    CD = m['frontNeck']+0.125)/2
+    CD = (m['frontNeck']+0.125)/2
     CF = m['shoulder']+m['shoulderDart']
     DF = ((CF)**2-(CD**2)**0.5)
     sinth = CD / CF
@@ -316,20 +360,21 @@ def getPointsddee(m, out): #point on line
     aaX, aaY = out['aa']
     Xx, Xy = out['X']
     m = (aaY-Xy)/(aaX-Xx)
-    #she point on my slope till i form
     ddX = (ddX-Xy)/m + Xx
     eeX = (eeX-Xy)/m + Xx
     return ddX, ddY, eeX, eeY
 
-def getPointsjjkk(m, out):
+def getPointsjjkk(m, out): #armhole ellipse
     cenX = out['aa'][0]
     cenY = out['gg'][1]
     radA = out['aa'][0]-out['gg'][0] #width
     radB = out['gg'][1]-out['aa'][1] #height
     if radA > radB:
+        pass
         # (jjX - cenX)**2 /radA + (jjY - cenY)**2 /radB  = 1
         # (kkX - cenX)**2 /radA + (kkY - cenY)**2 /radB  = 1
     else:
+        pass
         # (jjX - cenY)**2 /radA + (jjY - cenX)**2 /radB  = 1
         # (kkX - cenY)**2 /radA + (kkY - cenX)**2 /radB  = 1
         # sqrt((jjX-kkX)**2 + (jjY-kkY)**2) = m['armholeDart']
@@ -353,8 +398,10 @@ def getPointmm(m, out):
     #it's not like this was gonna produce something perfectly fitted anyways
     # :(
     return out['F'][0], out['F'][1]-0.75
+##
 
 def getPointsoopp(m, out):
+    ooX, ooY, ppX, ppY = None, None, None, None
     #oo = intersection GL and Cmm
     #pp = intersection HL and Cmm
     return ooX, ooY, ppX, ppY
@@ -526,64 +573,33 @@ def generateBackMoulagePoints(app, m):
     return out
 
 ### draft sloper
-#front lines:
-fLines=[('C', 'mm'),
-        ('mm','gg'),
-        ('aa','dd'),
-        ('dd','ee'),
-        ('ee', 'X'),
-        ('X', 'Y' ),
-        ('Y', 'Z' ),
-        ('Z', 'nn'),
-        ('nn', 'A'),
-        ('oo', 'L'),
-        ('L', 'pp'),
-        ('ii', 'L'),
-        ('L', 'kk'),
-        ('dd', 'L'),
-        ('L', 'ee'),
-        ('V', 'Q'),
-        ('Q', 'U'),
-        ('U', 'S'),
-        ('S', 'T'),
-        ('T', 'P'),
-        ('P', 'V')]
 
-#back lines:
-bLines=[('c','i'),
-        ('i','j'),
-        ('j','h'),
-        ('h','WW'),
-        ('ZZ','MM'),
-        ('MM','TT'),
-        ('TT','VV'),
-        ('VV','m'),
-        ('m','AA'),
-        ('c','LL'),
-        ('LL','QQ'),
-        ('QQ','OO'),
-        ('OO','PP'),
-        ('PP','KK'),
-        ('KK','c'),
-        ('i','k'),
-        ('k','j')]
+def coordsToPixels(app):
+    app.frontPixels = dict()
+    app.backPixels = dict()
+    frontHeight = app.frontPoints['C'][1] + abs(app.frontPoints['nn'][1])
+    backHeight = app.backPoints['c'][1]+ abs(app.frontPoints['MM'][1])
+    app.canvasHeight = max(frontHeight, backHeight) + 4 #2" border
+    frontWidth = app.frontPoints['Z'][0]
+    backWidth = app.backPoints['v'][0]
+    app.canvasWidth = max(frontWidth, backWidth) + 6 #2" separator
 
-fCurves=['AxC', 'gia']
-bCurves=['AgC', 'WfZ']
+    app.waistHeight = app.canvasHeight - 2 - max(abs(app.frontPoints['nn'][1], abs(app.frontPoints['MM'][1])))
+
+    for point in app.frontPoints:
+        x, y = app.frontPoints[point][0], app.frontPoints[point][1]
 
 
 
 def draftLines(app):
-    for line in fLines:
-        x1, y1 = app.frontPoints[line[0]]
-        x2, y2 = app.frontPoints[line[1]]
-        #translate inches to pixels here
+    for line in app.fLines:
+        x1, y1 = app.frontPixels[line[0]]
+        x2, y2 = app.frontPixels[line[1]]
         drawLine(x1, y1, x2, y2, fill='black')
 
-    for line in bLines:
-        x1, y1 = app.backPoints[line[0]]
-        x2, y2 = app.backPoints[line[1]]
-        #translate inches to pixels here
+    for line in app.bLines:
+        x1, y1 = app.backPixels[line[0]]
+        x2, y2 = app.backPixels[line[1]]
         drawLine(x1, y1, x2, y2, fill='black')
 
 
@@ -620,19 +636,114 @@ def onAppStart(app):
     app.beneviento = initateEverything()
     app.frontPonts = []
     app.backPoints = []
+    app.canvasX, app.canvasY = app.width//6, app.height //8
+    app.canvasWidth, app.canvasHeight = app.width//4, app.height//3*2
+    initiateEverything(app)
 
-def redrawAll(app): #if this creates an MVC violation istg
+def redrawAll(app):
     if app.scene == "welcome":
-        redrawWelcome(app)
-    elif app.scene == "measurements":
-        redrawMeasurements(app)
-    elif app.scene == "sizes":
-        redrawSizes(app)
-    elif app.scene == "drafter":
-        redrawDrafter(app)
-    elif app.scene == "output":
-        redrawOutput(app)
+        #draw background
+        background = "lightPink"
+        drawRect(0,0,app.width, app.height, fill = background)
+        drawLabel("Welcome!", app.width//2,app.height//6, size = 20)
+        drawLabel("Please select an input type:", app.width//2,
+                    (app.height//6)*1.6)
+        #draw measurements button
+        if app.highlightedLeft:
+            border1Color = "black"
+        else:
+            border1Color = background
+        border1Width = 2
+    #remember to adjust rectangle width to always be wider than the text
+        drawRect(app.width//4, app.height//2, app.width//6, app.height//10,
+                    fill = "white", border = border1Color,
+                    borderWidth = border1Width, align = "center")
+        drawLabel("Measurements", app.width//4, app.height//2, size = 16,
+                    align = "center")
+        #draw sizes button
+        if app.highlightedRight:
+            border2Color = "black"
+        else:
+            border2Color = background
+        border2Width = 2
+        drawRect(app.width//4*3, app.height//2, app.width//6, app.height//10,
+                    fill = "white", border = border2Color,
+                    borderWidth = border2Width, align = "center")
+        drawLabel("Clothing Size", app.width//4*3, app.height//2, size = 16,
+                    align = "center")
 
+    elif app.scene == "measurements":
+        #draw background
+        background = "mistyRose"
+        drawRect(0,0,app.width, app.height, fill = background)
+        #draw instructions
+        TextLine1 = 'Please see attached guide on how to take measurements.'
+        TextLine2 = "If you can't take all of these measurements yourself,"
+        TextLine3 = 'feel free to leave some blank. You can also estimate your'
+        TextLine4 = 'measurements with just your bust/chest, waist, and hip.'
+        TextLine5 = 'These are taken at the widest and narrowest points.'
+        drawLabel(TextLine1, app.width//6, app.height//4 + 00, align = "left-top")
+        drawLabel(TextLine2, app.width//6, app.height//4 + 12, align = "left-top")
+        drawLabel(TextLine3, app.width//6, app.height//4 + 24, align = "left-top")
+        drawLabel(TextLine4, app.width//6, app.height//4 + 36, align = "left-top")
+        drawLabel(TextLine5, app.width//6, app.height//4 + 48, align = "left-top")
+        #draw back button
+        if app.highlightedBack:
+            border1Color = "black"
+        else:
+            border1Color = background
+        border1Width = 2
+        drawRect(app.width//6, app.height//7*6, app.width//8, app.height//12,
+                    fill = "white", border = border1Color,
+                    borderWidth = border1Width, align = "center")
+        drawLabel("Go Back", app.width//6, app.height//7*6, align = "center")
+        #draw continue button
+        if app.highlightedContinue:
+            border2Color = "black"
+        else:
+            border2Color = background
+        border2Width = 2
+        drawRect(app.width//6*5, app.height//7*6, app.width//8, app.height//12,
+                    fill = "white", border = border2Color,
+                    borderWidth = border2Width, align = "center")
+        drawLabel("Continue", app.width//6*5, app.height//7*6, align = "center")
+
+    elif app.scene == "sizes":
+        #draw background
+        background = "mistyRose"
+        drawRect(0,0,app.width, app.height, fill = background)
+        #draw back button
+        if app.highlightedBack:
+            border1Color = "black"
+        else:
+            border1Color = background
+        border1Width = 2
+        drawRect(app.width//6, app.height//7*6, app.width//8, app.height//12,
+                    fill = "white", border = border1Color,
+                    borderWidth = border1Width, align = "center")
+        drawLabel("Go Back", app.width//6, app.height//7*6, align = "center")
+        #draw continue button
+        if app.highlightedContinue:
+            border2Color = "black"
+        else:
+            border2Color = background
+        border2Width = 2
+        drawRect(app.width//6*5, app.height//7*6, app.width//8, app.height//12,
+                    fill = "white", border = border2Color,
+                    borderWidth = border2Width, align = "center")
+        drawLabel("Continue", app.width//6*5, app.height//7*6, align = "center")
+
+    elif app.scene == "drafter":
+        #draw background
+        background = "mistyRose"
+        drawRect(0,0,app.width, app.height, fill = background)
+        #create canvas for draft
+        drawRect(app.canvasX, app.canvasY, app.canvasWidth, app.canvasHeight, fill = 'white', border = 'black')
+
+    elif app.scene == "output":
+        #draw background
+        background = "maroon"
+        drawRect(0,0,app.width, app.height, fill = background)
 
 def onMouseMove(app, mouseX, mouseY):
     if app.scene == "welcome":
@@ -691,132 +802,15 @@ def onMouseRelease(app, mouseX, mouseY):
     if app.scene == "measurements" or app.scene == "sizes":
         app.highlightedBack = False
 
-### draw scenes
-
-
-
-def redrawWelcome(app):
-    #draw background
-    background = "lightPink"
-    drawRect(0,0,app.width, app.height, fill = background)
-    drawLabel("Welcome!", app.width//2,app.height//6, size = 20)
-    drawLabel("Please select an input type:", app.width//2,
-                (app.height//6)*1.6)
-    #draw measurements button
-    if app.highlightedLeft:
-        border1Color = "black"
-    else:
-        border1Color = background
-    border1Width = 2
-#remember to adjust rectangle width to always be wider than the text
-    drawRect(app.width//4, app.height//2, app.width//6, app.height//10,
-                fill = "white", border = border1Color,
-                borderWidth = border1Width, align = "center")
-    drawLabel("Measurements", app.width//4, app.height//2, size = 16,
-                align = "center")
-    #draw sizes button
-    if app.highlightedRight:
-        border2Color = "black"
-    else:
-        border2Color = background
-    border2Width = 2
-    drawRect(app.width//4*3, app.height//2, app.width//6, app.height//10,
-                fill = "white", border = border2Color,
-                borderWidth = border2Width, align = "center")
-    drawLabel("Clothing Size", app.width//4*3, app.height//2, size = 16,
-                align = "center")
-
-def redrawMeasurements(app):
-    #draw background
-    background = "mistyRose"
-    drawRect(0,0,app.width, app.height, fill = background)
-    #draw instructions
-    TextLine1 = 'Please see attached guide on how to take measurements.'
-    TextLine2 = "If you can't take all of these measurements yourself,"
-    TextLine3 = 'feel free to leave some blank. You can also estimate your'
-    TextLine4 = 'measurements with just your bust/chest, waist, and hip.'
-    TextLine5 = 'These are taken at the widest and narrowest points.'
-    drawLabel(TextLine1, app.width//6, app.height//4 + 00, align = "left-top")
-    drawLabel(TextLine2, app.width//6, app.height//4 + 12, align = "left-top")
-    drawLabel(TextLine3, app.width//6, app.height//4 + 24, align = "left-top")
-    drawLabel(TextLine4, app.width//6, app.height//4 + 36, align = "left-top")
-    drawLabel(TextLine5, app.width//6, app.height//4 + 48, align = "left-top")
-    #draw back button
-    if app.highlightedBack:
-        border1Color = "black"
-    else:
-        border1Color = background
-    border1Width = 2
-    drawRect(app.width//6, app.height//7*6, app.width//8, app.height//12,
-                fill = "white", border = border1Color,
-                borderWidth = border1Width, align = "center")
-    drawLabel("Go Back", app.width//6, app.height//7*6, align = "center")
-    #draw continue button
-    if app.highlightedContinue:
-        border2Color = "black"
-    else:
-        border2Color = background
-    border2Width = 2
-    drawRect(app.width//6*5, app.height//7*6, app.width//8, app.height//12,
-                fill = "white", border = border2Color,
-                borderWidth = border2Width, align = "center")
-    drawLabel("Continue", app.width//6*5, app.height//7*6, align = "center")
-
-
-def redrawSizes(app):
-    #draw background
-    background = "mistyRose"
-    drawRect(0,0,app.width, app.height, fill = background)
-    #draw back button
-    if app.highlightedBack:
-        border1Color = "black"
-    else:
-        border1Color = background
-    border1Width = 2
-    drawRect(app.width//6, app.height//7*6, app.width//8, app.height//12,
-                fill = "white", border = border1Color,
-                borderWidth = border1Width, align = "center")
-    drawLabel("Go Back", app.width//6, app.height//7*6, align = "center")
-    #draw continue button
-    if app.highlightedContinue:
-        border2Color = "black"
-    else:
-        border2Color = background
-    border2Width = 2
-    drawRect(app.width//6*5, app.height//7*6, app.width//8, app.height//12,
-                fill = "white", border = border2Color,
-                borderWidth = border2Width, align = "center")
-    drawLabel("Continue", app.width//6*5, app.height//7*6, align = "center")
-
-
-def redrawDrafter(app):
-    #draw background
-    background = "mistyRose"
-    drawRect(0,0,app.width, app.height, fill = background)
-    #create canvas for draft
-    drawRect(app.width/6,app.height/4,app.width/4, app.height/4, fill = 'white', border = 'black')
-
-
-def redrawOutput(app):
-    #draw background
-    background = "maroon"
-    drawRect(0,0,app.width, app.height, fill = background)
-
-
-
 
 ### run!
-
 
 def main():
     runApp()
 
 main()
 
-
-
-
-### incomplete
+### more features
 #we'll come back to this if we have time
 
 class user:
