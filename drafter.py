@@ -8,46 +8,22 @@ import copy
 
 def initiateEverything(app):
 #front lines:
-    app.fLines=[('C', 'mm'),
-            ('mm','gg'),
-            ('aa','dd'),
-            ('dd','ee'),
-            ('ee', 'X'),
-            ('X', 'Y' ),
-            ('Y', 'Z' ),
-            ('Z', 'nn'),
-            ('nn', 'A'),
+    app.fLines=[('C', 'mm'),('mm','gg'),('aa','dd'),('dd','ee'),('ee', 'X'),('X', 'Y' ),
+            ('Y', 'Z' ),('Z', 'nn'),('nn', 'A'),
             #('oo', 'L'),
             #('L', 'pp'),
-            ('ii', 'L'),
-            ('L', 'kk'),
-            ('dd', 'L'),
-            ('L', 'ee'),
-            ('V', 'Q'),
-            ('Q', 'U'),
-            ('U', 'S'),
-            ('S', 'T'),
-            ('T', 'P'),
-            ('P', 'V')]
+            ('ii', 'L'),('L', 'kk'),('dd', 'L'),('L', 'ee'),('V', 'Q'),('Q', 'U'),
+            ('U', 'S'),('S', 'T'),('T', 'P'),('P', 'V')]
 
-    #back lines:
-    app.bLines=[('c','i'),
-            ('i','j'),
-            ('j','h'),
-            ('h','WW'),
-            ('ZZ','MM'),
-            ('MM','TT'),
-            ('TT','VV'),
-            ('VV','m'),
-            ('m','AA'),
+#back lines:
+    app.bLines=[('c','i'),('i','j'),('j','h'),('h','WW'),('ZZ','MM'),('MM','TT'),
+            ('TT','VV'),('VV','m'),('m','AA'),
             #('c','LL'),
             #('LL','QQ'),
-            ('QQ','OO'),
-            ('OO','PP'),
+            ('QQ','OO'),('OO','PP'),
             #('PP','KK'),
             #('KK','c'),
-            ('i','k'),
-            ('k','j')]
+            ('i','k'),('k','j')]
 
     allMeasurements = ['neck', 'shoulder', 'front length', 'cross front',
     'figure length','figure breadth', 'back length', 'cross back', 'bust',

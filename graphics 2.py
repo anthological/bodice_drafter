@@ -43,6 +43,7 @@ def onAppStart(app):
         app.sizeList.append(str(s))
     app.currentSize = ''
     app.highlightCenter = False #this is for scene 'sizes'
+    app.isUsingSize = False
 
 
 def loadBeneviento():
@@ -175,6 +176,9 @@ def redrawAll(app):
         if app.takingInput and app.currentTextBox == '':
             drawLabel('input size here', app.width//2, app.height//2, size = 24,
             fill = 'black', opacity = 50, align = 'center')
+        if app.currentSize != '':
+            drawLabel(f'Size = {app.currentSize}', app.width//2, app.height//2+30,
+            size = 24, fill = 'black', align = 'center')
 
 
     if app.scene == "drafter":
@@ -248,18 +252,23 @@ def onMousePress(app, mouseX, mouseY):
         if ((app.width//4-app.width/12) < mouseX < (app.width//4+app.width/12) and
            (app.height//2-app.width//20) < mouseY < (app.height//2+app.height//20)):
                app.scene = "measurements"
+               app.isUsingSize = False
         #go to sizes
         if ((app.width//4*3-app.width/12) < mouseX < (app.width//4*3+app.width/12) and
            (app.height//2-app.width//20) < mouseY < (app.height//2+app.height//20)):
                app.scene = "sizes"
+               app.isUsingSize = True
     if app.scene != "welcome":
         #go back
         if ((app.width//6-app.width/16) < mouseX < (app.width//6+app.width/16) and
            (app.height//7*6-app.width//24) < mouseY < (app.height//7*6+app.height//24)):
             if app.scene == 'measurements' or app.scene == 'sizes':
-                app.scene = "welcome"
+                app.scene = 'welcome'
             elif app.scene == 'drafter':
-                app.scene = 'measurements'
+                if app.isUsingSize:
+                    app.scene = 'sizes'
+                else:
+                    app.scene = 'measurements'
             elif app.scene == 'output':
                 app.scene = 'drafter'
         #continue
@@ -278,9 +287,9 @@ def onMousePress(app, mouseX, mouseY):
 
 
 def onMouseRelease(app, mouseX, mouseY):
-    if app.scene != "welcome":
-        app.highlightedBack = False
-        app.currentTextBox = ''
+    app.highlightedBack = False
+    app.currentTextBox = ''
+    app.currentSize = ''
 
 def onMouseDrag(app, mouseX, mouseY):
     if app.scene != "welcome":
@@ -288,11 +297,16 @@ def onMouseDrag(app, mouseX, mouseY):
 
 def onKeyPress(app, key):
     if app.scene == 'sizes':
-        if app.takingInput and key.isdigit:
+        if app.takingInput and key.isdigit():
             app.currentTextBox += key
         if key == 'enter':
             if app.currentTextBox in app.sizeList:
                 app.currentSize = app.currentTextBox
+                print(app.currentSize)
+                app.takingInput = False
+            else:
+                app.currentTextBox = 'Invalid Size'
+
 
 
 
