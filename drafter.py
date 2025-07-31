@@ -343,17 +343,22 @@ def generateBackGuidePoints(m): #m = measurements dictionary
 def dist(x1, y1, x2, y2):
     return ((x2-x1)**2+(y2-y1)**2)**0.5
 
-def landOnGuideline(x1, y1, x2, y2, length):
-    pass
+def getSecondLeg(triangle):
+    #cry
+    return
+
+def landOnGuideline(x1, y1, x2, y2, length, call):
+    if call == "F": #xy1 = C, xy2 = D
+        pass
 
 def pointAlongDiagLine(x1, y1, length, x2 = None, y2 = None, angle = None):
     pass
 
-def skipDart(cx, cy, x1, y1, x2, y2):
-    pass
-
-def simpleDiagGuide(x1, y1, length, direction):
-    pass
+def skipDart(latestPoint):
+    if latestPoint == 'Y':
+        return 0.25 #come back to this math Later
+    if latestPoint == 'gg'
+        return 0.25
 
 def makeEllipse(x1, y1, x2, y2, x3, y3):
     pass
@@ -366,7 +371,6 @@ def pointAlongEllipse(ellipse, xy, length, direction):
 
 ### generate front moulage
 
-
 def generateFrontMoulagePoints(m):
     out = dict()
     #neck
@@ -376,40 +380,93 @@ def generateFrontMoulagePoints(m):
     out['D'] = (m['frontNeck'], m['frontLength']+(m['frontNeck']+0.125)/2)
     out['E'] = (m['frontNeck']+6, m['frontLength']+(m['frontNeck']+0.125)/2)
     #shoulder
-    out['F'] =
-    out['G'] =
-    out['H'] =
-    out['I'] =
-    out['J'] =
-    out['K'] =
-    out['L'] =
-    out['M'] =
-    out['N'] =
-    out['O'] =
-    out['P'] =
-    out['Q'] =
-    out['R'] =
-    out['S'] =
-    out['T'] =
-    out['U'] =
-    out['V'] =
-    out['W'] =
-    out['X'] =
-    out['Y'] =
-    out['Z'] =
-    out['aa']=
-    out['bb']=
-    out['cc']=
-    out['dd']=
-    out['ee']=
-    out['ff']=
-    out['gg']=
-    out['hh']=
-    out['ii']=
-    out['jj']=
-    out['kk']=
-    out['ll']=
-    out['mm']=
+    out['F'] = getPointF(m)
+    out['G'] = getPointG(m)
+    out['H'] = getPointH(m)
+    #bust
+    out['I'] = (0, m['frontLength']/2) #temp bust height
+    out['J'] = (m['frontBust'], m['frontLength']/2)
+    out['K'] = (m['halfFigureBreadth'], m['frontLength']/2)
+    #high figure point
+    out['L'] = getHighFigure(m)
+    HFx, HFy = out['L'][0], out['L'][1]
+    out['M'] = (0, HFy)
+    #waist dart
+    out['N'] = (m['halfFigureBreadth'], 0)
+    out['O'] = (m['halfFigureBreadth'], -m['lowHipDepth'])
+    out['P'] = (m['halfFigureBreadth']-(m['waistDart']/2), 0)
+    out['Q'] = (m['halfFigureBreadth']+(m['waistDart']/2), 0)
+    out['R'] = (m['halfFigureBreadth']-0.5, 0)
+    out['S'] = (m['halfFigureBreadth'], -m['lowHipDepth']+3)
+    #waist shaping
+    out['T'] = (m['halfFigureBreadth']-(m['waistDart']/2), -0.5)
+    out['U'] = (m['halfFigureBreadth']+(m['waistDart']/2), -0.5)
+    #bust 2
+    out['V'] = (HFx, HFy-0.75)
+    out['W'] = (m['frontBust'], HFy)
+    #waist
+    out['X'] = (m['frontWaist']+m['waistDart'], 0)
+    out['Y'] = (m['frontHighHip'] + skipDart('Y'), -m['highHipDepth'])
+    out['Z'] = (m['frontLowHip'], -m['lowHipDepth'])
+    #side
+    out['aa']= getPointaa(m) #x should equal m['frontBust']
+    #final bust
+    out['bb']= (0, out['aa'][1])
+    out['cc']= getPointcc(m) #up 3 inches from X along side, then in 0.125
+    out['dd']= getPointdd(m) #along side, up 0.5 from w
+    out['ee']= getPointee(m) #along side, dn 0.5 from w
+    #you can bump out the waist dart, go down VN/4 then out 0.25
+    out['ff']= None #shoulder dart shaping, unused
+    out['gg']= (m['crossFront']+skipDart('gg'), m['frontLength']-3)
+    out['hh']= (m['crossFront']+skipDart('gg'), out['aa'][1])
+    #armhole curve
+    out['ii']= (m['crossFront']+skipDart('gg')+1/2**0.5, out['aa'][1]+1/2**0.5)
+    ellipse = getEllipse(out['gg'], out['ii'], out['aa'])
+    out['jj']= getPointjj(m, ellipse)
+    out['kk']= getPointkk(m, ellipse)
+    out['ll']= (out['B'][0]-1/2**0.5, out['B'][0]+1/2**0.5)
+    out['mm']= getPointmm(m, ellipse)
+    return out
+
+def generateBackMoulagePoints(m):
+    #neck
+    out['a'] = (0, m['backLength'])
+    out['b'] = (-m['backNeck'], m['backLength'])
+    out['c'] = (-m['backNeck'], m['backLength']+1)
+    #shoulder
+    out['d'] = getPointd(m)
+    out['e'] = getPointe(m)
+    out['f'] = getPointf(m)
+    #back contour
+    out['g'] = None #these aren't used in sloper but good to keep track
+    out['h'] = None
+    out['i'] = None
+    out['j'] = None
+    #waist shaping
+    out['k'] = (-m['backWaist']/2, 0)
+    out['l'] = (-m['backWaist']/2-m['waistDart'], 0)
+    out['m'] =
+    out['n'] =
+    out['o'] =
+    out['p'] =
+    out['q'] =
+    out['r'] =
+    out['s'] =
+    out['t'] =
+    out['u'] =
+    out['v'] =
+    out['w'] =
+    out['x'] =
+    out['y'] =
+    out['z'] =
+    out['AA']=
+    out['BB']=
+    out['CC']=
+    out['DD']=
+    out['EE']=
+    out['FF']=
+    out = dict()
+
 
 
 ### ALL THE CMU_GRAPHICS STUFF
