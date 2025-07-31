@@ -144,139 +144,139 @@ def calculateMeasurements(measures, height = 66):
     #import known ones
     neck = measures['neck']
     shoulder = measures['shoulder']
-    front_length = measures['front length']
-    cross_front = measures['cross front']
-    figure_length = measures['figure length']
-    figure_breadth = measures['figure breadth']
-    back_length = measures['back length']
-    cross_back = measures['cross back']
+    frontLength = measures['front length']
+    crossFront = measures['cross front']
+    figureLength = measures['figure length']
+    figureBreadth = measures['figure breadth']
+    backLength = measures['back length']
+    crossBack = measures['cross back']
     bust = measures['bust']
     underbust = measures['underbust']
     waist = measures['waist']
-    high_hip = measures['high hip']
-    low_hip = measures['low hip']
+    highHip = measures['high hip']
+    lowHip = measures['low hip']
     side = measures['side']
     armhole = measures['armhole']
     #calculate the rest
-    front_neck = neck/6 + 0.25
-    back_neck = neck/6 + 0.375
-    half_figure_breadth = figure_breadth/2
-    half_cross_front = cross_front/2
-    half_cross_back = cross_back/2
-    front_bust = bust/4 + 0.25
-    back_bust = bust/4 - 0.25
-    cup_size = (bust - underbust - 4.5)//1
-    front_waist = waist/4 + 0.25
-    back_waist = waist/4 - 0.25
-    front_armhole = armhole/2 - 0.25
-    back_armhole = armhole/2 + 0.25
-    front_high_hip = high_hip/4 + 0.25
-    back_high_hip = high_hip/4 - 0.25
-    front_low_hip = low_hip/4 + 0.25
-    back_low_hip = low_hip/4 - 0.25
+    frontNeck = neck/6 + 0.25
+    backNeck = neck/6 + 0.375
+    halfFigureBreadth = figureBreadth/2
+    halfCrossFront = crossFront/2
+    halfCrossBack = crossBack/2
+    frontBust = bust/4 + 0.25
+    backBust = bust/4 - 0.25
+    cupSize = (bust - underbust - 4.5)//1
+    frontWaist = waist/4 + 0.25
+    backWaist = waist/4 - 0.25
+    frontArmhole = armhole/2 - 0.25
+    backArmhole = armhole/2 + 0.25
+    frontHighHip = highHip/4 + 0.25
+    backHighHip = highHip/4 - 0.25
+    frontLowHip = lowHip/4 + 0.25
+    backLowHip = lowHip/4 - 0.25
     #adjustments
-    if front_length > back_length:
-        front_armhole += 0.5
-        back_armhole -= 0.5
+    if frontLength > backLength:
+        frontArmhole += 0.5
+        backArmhole -= 0.5
     #height
     if height <= 64:
-        LH_depth = 8
-        HH_depth = 4
+        LHDepth = 8
+        HHDepth = 4
     elif height >= 70:
-        LH_depth = 9
-        HH_depth = 4
+        LHDepth = 9
+        HHDepth = 4
     else:
-        LH_depth = 8.5
-        HH_depth = 4
+        LHDepth = 8.5
+        HHDepth = 4
     #cup darts
-    if cup_size == 1:
-        shoulder_dart = 0.375
-        side_dart = 0.75
-        armhole_dart = 0.375
-        CF_dart = 0.375
-    elif cup_size == 2:
-        shoulder_dart = 0.5
-        side_dart = 1
-        armhole_dart = 0.5
-        CF_dart = 0.5
-    elif cup_size == 3:
-        shoulder_dart = 0.625
-        side_dart = 1.25
-        armhole_dart = 0.625
-        CF_dart = 0.625
+    if cupSize == 1:
+        shoulderDart = 0.375
+        sideDart = 0.75
+        armholeDart = 0.375
+        CFDart = 0.375
+    elif cupSize == 2:
+        shoulderDart = 0.5
+        sideDart = 1
+        armholeDart = 0.5
+        CFDart = 0.5
+    elif cupSize == 3:
+        shoulderDart = 0.625
+        sideDart = 1.25
+        armholeDart = 0.625
+        CFDart = 0.625
     else:
-        shoulder_dart = 0.75
-        side_dart = 1.5
-        armhole_dart = 0.75
-        CF_dart = 0.75
+        shoulderDart = 0.75
+        sideDart = 1.5
+        armholeDart = 0.75
+        CFDart = 0.75
     #waist dart
-    if low_hip - waist >= 14:
-        waist_dart = 1.25
-    elif low_hip - waist >= 10:
-        waist_dart = 1
-    elif low_hip - waist >= 8:
-        waist_dart = 0.75
-    elif low_hip - waist >= 2:
-        waist_dart = 0.375
+    if lowHip - waist >= 14:
+        waistDart = 1.25
+    elif lowHip - waist >= 10:
+        waistDart = 1
+    elif lowHip - waist >= 8:
+        waistDart = 0.75
+    elif lowHip - waist >= 2:
+        waistDart = 0.375
     else:
-        waist_dart = 0
+        waistDart = 0
     #formatting
     out = {
     'neck': neck,
     'shoulder': shoulder,
-    'frontLength': front_length,
-    'crossFront': cross_front,
-    'figureLength': figure_length,
-    'figureBreadth': figure_breadth,
-    'backLength': back_length,
-    'crossBack': cross_back,
+    'frontLength': frontLength,
+    'crossFront': crossFront,
+    'figureLength': figureLength,
+    'figureBreadth': figureBreadth,
+    'backLength': backLength,
+    'crossBack': crossBack,
     'bust': bust,
     'underbust': underbust,
     'waist': waist,
-    'highHip': high_hip,
-    'lowHip': low_hip,
+    'highHip': highHip,
+    'lowHip': lowHip,
     'side': side,
     'armhole': armhole,
-    'frontNeck': front_neck,
-    'backNeck': back_neck,
-    'halfFigureBreadth': half_figure_breadth,
-    'halfCrossFront': half_cross_front,
-    'halfCrossBack': half_cross_back,
-    'frontBust': front_bust,
-    'backBust': back_bust,
-    'cupSize': cup_size,
-    'frontWaist': front_waist,
-    'backWaist': back_waist,
-    'frontArmhole': front_armhole,
-    'backArmhole': back_armhole,
-    'frontHighHip': front_high_hip,
-    'backHighHip': back_high_hip,
-    'frontLowHip': front_low_hip,
-    'backLowHip': back_low_hip,
-    'lowHipDepth': LH_depth,
-    'highHipDepth': HH_depth,
-    'shoulderDart': shoulder_dart,
-    'sideDart': side_dart,
-    'armholeDart': armhole_dart,
-    'centerFrontDart': CF_dart, #i feel like there's an easier way to do this
-    'waistDart': waist_dart}    #but some of my variable names are weird
+    'frontNeck': frontNeck,
+    'backNeck': backNeck,
+    'halfFigureBreadth': halfFigureBreadth,
+    'halfCrossFront': halfCrossFront,
+    'halfCrossBack': halfCrossBack,
+    'frontBust': frontBust,
+    'backBust': backBust,
+    'cupSize': cupSize,
+    'frontWaist': frontWaist,
+    'backWaist': backWaist,
+    'frontArmhole': frontArmhole,
+    'backArmhole': backArmhole,
+    'frontHighHip': frontHighHip,
+    'backHighHip': backHighHip,
+    'frontLowHip': frontLowHip,
+    'backLowHip': backLowHip,
+    'lowHipDepth': LHDepth,
+    'highHipDepth': HHDepth,
+    'shoulderDart': shoulderDart,
+    'sideDart': sideDart,
+    'armholeDart': armholeDart,
+    'centerFrontDart': CFDart, #i feel like there's an easier way to do this
+    'waistDart': waistDart}    #but some of my variable names are weird
     return out
 
 ### generate guidelines
 
 def generateFrontGuidePoints(m): #m = measurements dictionary
     out = [(0,0),(m['frontLowHip'],0)] #waist line
-    out.append([(0,-m['highHipDepth']),(m['frontLowHip'],-m['highHipDepth'])]) #high hip line
-    out.append([(0,-m['lowHipDepth']),(m['frontLowHip'],-m['lowHipDepth'])]) #low hip line
+    out.append([(0,-m['highHipDepth']),(m['frontLowHip'],-m['highHipDepth'])]) #high hip
+    out.append([(0,-m['lowHipDepth']),(m['frontLowHip'],-m['lowHipDepth'])]) #low hip
     out.append([(0,m['frontLength']),(4,m['frontLength'])]) #neckline
-    out.append([(0,m['frontLength']-3),(8,m['frontLength']-3)]) #cross-front line
-    out.append([(0,m['frontLength']/2),(m['frontBust'],m['frontLength']/2)]) #bust line
+    out.append([(0,m['frontLength']-3),(8,m['frontLength']-3)]) #cross-front
+    out.append([(0,m['frontLength']/2),(m['frontBust'],m['frontLength']/2)]) #bust
     return out
 
 def generateBackGuidePoints(m): #m = measurements dictionary
     out = [(0,0),(m['backLowHip'],0)] #waist line
-    out.append([(0, -m['highHipDepth']),(m['backLowHip'], -m['highHipDepth'])]) #high hip line
-    out.append([(0, -m['lowHipDepth']),(m['backLowHip'], -m['lowHipDepth'])]) #low hip line
+    out.append([(0, -m['highHipDepth']),(m['backLowHip'], -m['highHipDepth'])]) #high hip
+    out.append([(0, -m['lowHipDepth']),(m['backLowHip'], -m['lowHipDepth'])]) #low hip
     out.append([(0, m['backLength']),(9,m['backLength'])]) #neck/shoulder line
     out.append([(0, m['backLength']/4*3),(9, m['backLength']/4*3)]) #cross-back line
     out.append([(0, m['backLength']/2),(m['backBust'], m['backLength']/2)]) #bust line
@@ -738,7 +738,9 @@ def redrawAll(app):
         background = "mistyRose"
         drawRect(0,0,app.width, app.height, fill = background)
         #create canvas for draft
-        drawRect(app.canvasX, app.canvasY, app.canvasWidth, app.canvasHeight, fill = 'white', border = 'black')
+        drawRect(app.canvasX, app.canvasY,
+                app.canvasWidth, app.canvasHeight,
+                fill = 'white', border = 'black')
 
     elif app.scene == "output":
         #draw background
